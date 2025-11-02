@@ -1,0 +1,311 @@
+/* --- 1. Basic (Global) Styles --- */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f0f2f5; /* Light gray background */
+    color: #333;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+h1, h2, h3 {
+    color: #333;
+}
+
+a {
+    color: #28a745;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+main {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+    min-height: 60vh; /* Prevents page from being too short */
+}
+
+/* --- 2. Header and Navigation --- */
+header {
+    background-color: #28a745; /* Farmer green color */
+    color: white;
+    padding: 1.5rem 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2rem;
+    color: white;
+    text-align: center;
+}
+
+nav {
+    text-align: center;
+    padding-top: 10px;
+}
+
+nav a {
+    color: white;
+    margin: 0 15px;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 5px 0;
+    border-bottom: 2px solid transparent;
+    transition: border-bottom 0.2s ease;
+}
+
+nav a:hover {
+    border-bottom: 2px solid white;
+    text-decoration: none;
+}
+
+/* Style for Login/Register buttons */
+nav a.nav-login, nav a.nav-register {
+    background: white;
+    color: #28a745;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+nav a.nav-login:hover {
+    background: #f0f0f0;
+    border-bottom: 2px solid transparent;
+}
+nav a.nav-logout {
+    color: #f8d7da; /* Light red */
+}
+
+
+/* --- 3. Home Page Grid --- */
+.main-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+}
+
+section {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.full-width-grid-item {
+    grid-column: 1 / -1; /* This item will take full width */
+}
+
+/* Market Price Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+th {
+    background-color: #e9f5e9;
+    font-weight: bold;
+}
+
+
+/* --- 4. Flash Messages --- */
+.flash-message {
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: #f8d7da; /* Red (Error) */
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    border-radius: 5px;
+}
+.flash-message-success {
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: #d4edda; /* Green (Success) */
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    border-radius: 5px;
+}
+
+
+/* --- 5. Forms (Login, Register, Q&A, City) --- */
+.form-box {
+    max-width: 500px;
+    margin: 30px auto;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e9e9e9;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+.form-group input[type="text"],
+.form-group input[type="password"],
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box; /* This keeps the width correct */
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 8px rgba(40, 167, 69, 0.3);
+    outline: none;
+}
+
+.btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.btn:hover {
+    background-color: #218838;
+    transform: scale(1.02);
+}
+
+
+/* --- 6. MP Portal Style Login (2-Column) --- */
+.login-container {
+    display: flex;
+    align-items: stretch; /* Give both columns equal height */
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    overflow: hidden; /* To keep corners rounded */
+    margin: 30px auto;
+    max-width: 900px;
+    border: 1px solid #e9e9e9;
+}
+
+/* 6a. Left Side (Illustration) */
+.login-illustration {
+    flex-basis: 50%;
+    background-color: #f0f9f3; /* Light green background */
+    padding: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid #e9e9e9;
+}
+.login-illustration img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* 6b. Right Side (Form) */
+.login-form-box-wrapper {
+    flex-basis: 50%;
+    padding: 3rem;
+}
+.login-form-box-wrapper h2 {
+    font-size: 1.8rem;
+    color: #333;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+/* (Media Query: 1-Column on small screens) */
+@media (max-width: 768px) {
+    .login-container {
+        flex-direction: column;
+    }
+    .login-illustration {
+        display: none; /* Hide illustration on small screens */
+    }
+}
+
+
+/* --- 7. Q&A and Schemes Pages --- */
+.post-card, .info-card {
+    background: #fff;
+    border: 1px solid #e9e9e9;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+.post-card p {
+    font-size: 1.1rem;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+.post-card small {
+    color: #555;
+}
+
+/* --- 8. AI Helper Page Style --- */
+.chat-container {
+    max-width: 800px;
+    margin: 30px auto;
+}
+.answer-box {
+    background: #fff;
+    border: 1px solid #e9e9e9;
+    border-radius: 10px;
+    padding: 1.5rem 2rem;
+    margin-top: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+.answer-box h3 {
+    color: #28a745;
+    margin-top: 0;
+    border-bottom: 2px solid #e0e0e9;
+    padding-bottom: 10px;
+}
+.answer-box p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+}
+
+
+/* --- 9. Footer --- */
+footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 30px;
+    background-color: #333;
+    color: #aaa;
+}
+footer p {
+    margin: 0;
+}
+
+
+/* --- 10. Animation --- */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.animate-on-load {
+    animation: fadeIn 0.5s ease-out;
+}
+

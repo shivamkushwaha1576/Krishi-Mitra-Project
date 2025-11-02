@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krishi Mitra - Smart Portal</title>
+    <!-- This links your style.css file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <!-- === Header === -->
+    <header>
+        <h1>Krishi Mitra - Smart Awareness Portal for Farmers</h1>
+        
+        <!-- === Navigation Bar === -->
+        <nav>
+            <!-- This 'if' checks if the user is logged in -->
+            {% if current_user.is_authenticated %}
+                <!-- If logged in, show these links -->
+                <a href="/dashboard">Dashboard</a>
+                <a href="/community">Community Q&A</a>
+                <a href="/ai_helper">AI Assistant</a>
+                <a href="/schemes">Schemes</a>
+                <a href="/logout" class="nav-logout">Logout ({{ current_user.username }})</a>
+            
+            {% else %}
+                <!-- If not logged in, show these links -->
+                <a href="/login" class="nav-login">Login</a>
+                <a href="/register" class="nav-register">Register</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <!-- === Main Content === -->
+    <main class="main-grid">
+
+        <!-- (Flash messages can also appear here, e.g., 'Logout successful!') -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="{{ category|default('flash-message') }} full-width-grid-item">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- 1. Today's Weather -->
+        <section id="weather-section">
+            <h2>Today's Weather</h2>
+            <div id="weather-data">
+                <p>Loading weather data...</p>
+            </div>
+        </section>
+
+        <!-- 2. Market Prices -->
+        <section id="price-section">
+            <h2>Market Prices</h2>
+            <table id="prices-table">
+                <thead>
+                    <tr>
+                        <th>Crop</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody id="prices-body">
+                    <tr>
+                        <td colspan="2">Loading prices...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- 3. Crop Info -->
+        <section id="info-section" class="full-width-grid-item">
+            <h2>Crop Info</h2>
+            <p>Here you can find useful articles for farmers, information on new technologies, and details about government schemes.</p>
+            <ul>
+                <li>Correct time for sowing Rabi crops. (Ask the AI Assistant!)</li>
+                <li>Benefits of drip irrigation.</li>
+                <li>
+                    <a href="/schemes" style="font-weight: bold; color: #28a745;">
+                        Read more about Government Schemes here...
+                    </a>
+                </li>
+            </ul>
+        </section>
+    </main>
+
+    <!-- === Footer === -->
+    <footer>
+        <p>&copy; 2025 Krishi Mitra Portal | All rights reserved</p>
+    </footer>
+
+    <!-- === JavaScript === -->
+    <!-- This JavaScript file will load the Weather and Market Price -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
+

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Dashboard</title>
+    <!-- This links your style.css file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <!-- === Header === -->
+    <header>
+        <h1>Krishi Mitra - Dashboard</h1>
+        
+        <!-- === Navigation Bar === -->
+        <nav>
+            <!-- This 'if' checks if the user is logged in -->
+            {% if current_user.is_authenticated %}
+                <!-- If logged in, show these links -->
+                <a href="/">Home</a>
+                <a href="/dashboard">Dashboard</a>
+                <a href="/community">Community Q&A</a>
+                <a href="/ai_helper">AI Assistant</a>
+                <a href="/schemes">Schemes</a>
+                <a href="/logout" class="nav-logout">Logout ({{ current_user.username }})</a>
+            
+            {% else %}
+                 <!-- (This page is @login_required, so this part will likely not be seen) -->
+                <a href="/login" class="nav-login">Login</a>
+                <a href="/register" class="nav-register">Register</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <!-- === Main Content === -->
+    <main>
+        
+        <!-- Flash messages (e.g., "Login successful!" or "City updated!") -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <!-- Green message for 'success' category, red for others -->
+                    <div class="{{ 'flash-message-success' if category == 'flash-message-success' else 'flash-message' }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Welcome Message -->
+        <h2 style="text-align: left; border-bottom: none; margin-bottom: 30px;">
+            Welcome, {{ current_user.username }}!
+        </h2>
+
+        <!-- Dashboard Grid -->
+        <div class="main-grid"> <!-- Re-using the main-grid class for a 2-column layout -->
+
+            <!-- 1. Change City Form -->
+            <section class="form-box animate-on-load" style="margin: 0;"> <!-- Remove top margin -->
+                <h3>My Weather Setting</h3>
+                <p style="margin-bottom: 20px;">Your currently saved city is: <br><strong>{{ current_user.city }}</strong></p>
+                
+                <form method="POST" action="/update_city">
+                    <div class="form-group">
+                        <label for="city">Change Your City (In English):</label>
+                        <input type="text" id="city" name="city" placeholder="e.g. Mumbai, Pune" required>
+                    </div>
+                    <button type="submit" class="btn">Save</button>
+                </form>
+            </section>
+
+            <!-- 2. Your Posts (Empty for now, can be added later) -->
+            <section class="info-card animate-on-load" style="margin: 0;"> <!-- Remove top margin -->
+                <h3>My Activity</h3>
+                <p>Your posted questions will appear here.</p>
+                <!-- 
+                (For the future: we can loop 'current_user.posts')
+                {% for post in current_user.posts %}
+                    <p>{{ post.content }}</p>
+                {% endfor %} 
+                -->
+            </section>
+
+        </div> <!-- .main-grid ends -->
+
+    </main>
+
+    <!-- === Footer === -->
+    <footer>
+        <p>&copy; 2025 Krishi Mitra Portal | All rights reserved</p>
+    </footer>
+
+</body>
+</html>
+

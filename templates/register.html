@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create a New Account</title>
+    
+    <!-- This links your style.css file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body style="background-color: #f0f2f5;"> <!-- Set background to grey -->
+
+    <!-- Simple Header (like login page) -->
+    <header style="background-color: #28a745; color: white; padding: 1rem 2rem;">
+        <h1><a href="/" style="color: white; text-decoration: none;">Krishi Mitra - Portal</a></h1>
+    </header>
+
+    <!-- We will use the 'form-box' class which is already in style.css -->
+    <main class="form-box animate-on-load">
+        
+        <h2>Create a New Account</h2>
+        <p style="margin-bottom: 25px; color: #555;">Choose a username and password to join the portal.</p>
+
+        <!-- Flash messages (e.g., "Username already taken") will appear here -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="{{ 'flash-message-success' if category == 'flash-message-success' else 'flash-message' }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Form -->
+        <form method="POST" action="/register">
+            <div class="form-group">
+                <label for="username">Choose a Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Choose a Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn">Create Account</button>
+        </form>
+        <p style="text-align: center; margin-top: 20px;">
+            Already have an account? <a href="/login">Login here</a>
+        </p>
+    </main>
+
+</body>
+</html>
+
