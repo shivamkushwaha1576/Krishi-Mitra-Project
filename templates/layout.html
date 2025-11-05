@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- The title will be changed by each page that extends this -->
+    <title>{% block title %}Krishi Mitra{% endblock %}</title>
+    
+    <!-- This links to your one and only CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <!-- === 1. Header === -->
+    <header>
+        <h1><a href="/" style="color: white; text-decoration: none;">Krishi Mitra - Smart Portal</a></h1>
+        
+        <!-- === 2. Navigation Bar === -->
+        <nav>
+            <!-- This 'if' checks if the user is logged in or not -->
+            {% if current_user.is_authenticated %}
+                <!-- Show these links if logged in -->
+                <a href="/">Home</a>
+                <a href="/dashboard">Dashboard</a>
+                <a href="/community">Community Q&A</a>
+                <a href="/ai_helper">AI Assistant</a>
+                <a href="/schemes">Schemes</a>
+                <a href="/about">About Us</a>
+                <a href="/logout" class="nav-logout">Logout ({{ current_user.username }})</a>
+            
+            {% else %}
+                <!-- Show these links if not logged in -->
+                <a href="/">Home</a>
+                <a href="/schemes">Schemes</a>
+                <a href="/about">About Us</a>
+                <a href="/login" class="nav-login">Login</a>
+                <a href="/register" classNmae="nav-register">Register</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <!-- === 3. Main Content (This will be replaced by other pages) === -->
+    <main>
+        <!-- This block is for Flash Messages (Errors/Success) -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <!-- The category will be 'flash-message' (red) or 'flash-message-success' (green) -->
+                    <div class="{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- This 'content' block will be filled by index.html, login.html, etc. -->
+        {% block content %}{% endblock %}
+
+    </main>
+
+    <!-- === 4. Footer === -->
+    <footer>
+        <p>&copy; 2025 Krishi Mitra Portal | All Rights Reserved</p>
+        <p><a href="/about" style="color: #aaa; text-decoration: underline;">About Us</a></p>
+    </footer>
+
+    <!-- This 'scripts' block is for pages (like index.html) that need JavaScript -->
+    {% block scripts %}{% endblock %}
+
+</body>
+</html>

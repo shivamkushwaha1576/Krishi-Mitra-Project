@@ -154,17 +154,23 @@ def ask_post():
     flash('Your post has been submitted!', 'flash-message-success')
     return redirect(url_for('community'))
 
-# --- 8. AI Helper (Gemini) Routes (New) ---
+# 7f. About Us Page (New Feature)
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+# --- 8. AI Helper (Gemini) Routes ---
 
 # 8a. Function to call the AI
 def run_gemini(user_question):
     # !!! IMPORTANT: Get your NEW, SAFE API Key from Google AI Studio !!!
-    API_KEY = "YAHAN_APNI_KEY_DALEN" # <-- PASTE YOUR NEW KEY HERE
+    API_KEY = "AIzaSyA4GkVGjFp4-bEPTW72A30noH1hxf62GBU" 
     API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key={API_KEY}"
     
+    # (Simple English Prompt)
     system_prompt = (
         "You are 'Krishi Mitra', an AI assistant for Indian farmers."
-        "You must provide all answers in English."
+        "You MUST provide all answers in ENGLISH."
         "Your answers should be short, easy to understand, and focused on Indian agriculture (crops, weather, government schemes, soil)."
     )
     
@@ -184,6 +190,7 @@ def run_gemini(user_question):
         return html_response
     except Exception as e:
         print(f"Gemini API Error: {e}")
+        # (Simple English Error)
         return ("Sorry, the AI assistant is currently unavailable. Please try again later. "
                 "Error: " + str(e))
 
@@ -208,11 +215,10 @@ def get_weather():
         city = "Jabalpur" # Default city (if not logged in)
 
     # !!! IMPORTANT: This is your Weather API Key !!!
-    WEATHER_API_KEY = "YAHAN_APNI_KEY_DALEN" # <-- PASTE YOUR NEW KEY HERE
+    WEATHER_API_KEY = "c0dd28132a0d93087b097b391b6b6feb" 
     try:
-        # --- HTTPS FIX IS HERE ---
-        base_url = "https://api.openweathermap.org/data/2.5/weather"
-        full_url = f"{base_url}?q={city}&appid={WEATHER_API_KEY}&units=metric&lang=en" # Changed lang to 'en'
+        base_url = "https://api.openweathermap.org/data/2.5/weather" # (HTTPS Fix)
+        full_url = f"{base_url}?q={city}&appid={WEATHER_API_KEY}&units=metric&lang=en" 
         response = requests.get(full_url)
         data = response.json() 
 
@@ -226,9 +232,8 @@ def get_weather():
         print(f"Weather API Error: {e}")
         # If user's city is wrong, show default
         city = "Jabalpur"
-        # --- HTTPS FIX IS HERE ---
-        base_url = "https://api.openweathermap.org/data/2.5/weather"
-        full_url = f"{base_url}?q={city}&appid={WEATHER_API_KEY}&units=metric&lang=en" # Changed lang to 'en'
+        base_url = "https://api.openweathermap.org/data/2.5/weather" # (HTTPS Fix)
+        full_url = f"{base_url}?q={city}&appid={WEATHER_API_KEY}&units=metric&lang=en"
         response = requests.get(full_url)
         data = response.json()
         weather_data = {
@@ -241,7 +246,7 @@ def get_weather():
 # 9b. Market Prices API
 @app.route('/api/market_prices')
 def get_market_prices():
-    # (Placeholder data for now - now in English)
+    # (Placeholder data - now in English)
     prices = [
         {"crop": "Wheat", "price": "₹2250 / Quintal"},
         {"crop": "Tomato", "price": "₹1800 / Quintal"},
@@ -249,7 +254,7 @@ def get_market_prices():
     ]
     return jsonify(prices)
 
-# --- 10. Run the App (Simpler) ---
+# --- 10. Run the App (Simpler & Fixed) ---
 if __name__ == '__main__':
     # Before starting the server, create the database tables (next to app.py)
     with app.app_context():
@@ -258,4 +263,3 @@ if __name__ == '__main__':
 
     # Now, run the app
     app.run(debug=True)
-

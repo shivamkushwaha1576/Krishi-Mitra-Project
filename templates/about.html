@@ -1,0 +1,37 @@
+{% extends "layout.html" %} <!-- Step 1: Extend the layout -->
+
+<!-- Step 2: Change title -->
+{% block title %}
+    About Us
+{% endblock %}
+
+<!-- Step 3: Put all content inside this block -->
+{% block content %}
+<main style="max-width: 900px;"> <!-- Set width for this page -->
+    
+    <section class="info-card animate-on-load">
+        <h2>About Krishi Mitra Portal</h2>
+        <p>
+            Welcome to Krishi Mitra, your "Smart Awareness Portal" dedicated to empowering farmers with technology and real-time information.
+        </p>
+        <p>
+            This project was developed as a solution to bridge the information gap for farmers, providing them with the tools they need to succeed in a modern agricultural landscape.
+        </p>
+    </section>
+
+    <section class="info-card animate-on-load">
+        <h3>Our Mission & Features</h3>
+        <p>
+            Our mission is to combine the power of Python (Flask), live data from external APIs, and Artificial Intelligence (Google Gemini) to create a single, reliable platform. We provide:
+        </p>
+        <ul>
+            <li><strong>Live Weather Data:</strong> Personalized forecasts from OpenWeatherMap.</li>
+            <li><strong>Smart AI Assistant:</strong> Instant answers to complex farming questions (powered by Gemini).</li>
+            <li><strong>Community Support:</strong> A Q&A forum for farmers to help each other.</li>
+            <li><strong>Market Awareness:</strong> Up-to-date information on crop prices.</li>
+            <li><strong>Knowledge Base:</strong> Curated information on Government Schemes.</li>
+        </ul>
+    </section>
+
+</main>
+{% endblock %}

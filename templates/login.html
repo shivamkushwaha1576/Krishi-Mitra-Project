@@ -1,26 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Farmer Login</title>
-    
-    <!-- This links your style.css file -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body style="background-color: #f0f2f5;"> <!-- Set background to grey -->
+{% extends "layout.html" %} <!-- Step 1: Extend the layout -->
 
-    <!-- Simple Header (for Login Page) -->
-    <header style="background-color: #28a745; color: white; padding: 1rem 2rem;">
-        <h1><a href="/" style="color: white; text-decoration: none;">Krishi Mitra - Portal</a></h1>
-    </header>
+<!-- Step 2: Change title -->
+{% block title %}
+    Farmer Login
+{% endblock %}
 
-    <!-- This is the new 2-column layout (like the screenshot) -->
+<!-- Step 3: Put all content inside this block -->
+{% block content %}
+<main>
+    <!-- This is the 2-column layout container (from screenshot 10) -->
     <div class="login-container animate-on-load">
 
         <!-- 1. Left Side (Illustration) -->
         <div class="login-illustration">
-            <!-- We are using a placeholder image -->
+            <!-- Using a placeholder image -->
             <img src="https://placehold.co/400x400/e6f4ea/28a745?text=Krishi\nMitra\nPortal" 
                  alt="Krishi Mitra Portal Illustration"
                  onerror="this.src='https://placehold.co/400x400?text=Illustration'">
@@ -30,21 +23,11 @@
         <div class="login-form-box-wrapper">
             
             <h2>Farmer Login</h2>
-            <p style="margin-bottom: 25px; color: #555;">Please enter your username and password to log in to the portal.</p>
+            <p style="margin-bottom: 25px; color: #555;">Enter your username and password to log in to the portal.</p>
 
-            <!-- Flash Messages (Errors) will show here -->
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <!-- 'flash-message' is red (error) by default -->
-                        <div class="{{ 'flash-message-success' if category == 'flash-message-success' else 'flash-message' }}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
+            <!-- Flash messages (Errors) will be shown here (they are inside the <main> block in layout.html) -->
 
-            <!-- Our login form -->
+            <!-- The login form -->
             <form method="POST" action="/login">
                 <div class="form-group">
                     <label for="username">Username:</label>
@@ -62,7 +45,5 @@
         </div>
 
     </div>
-
-</body>
-</html>
-
+</main>
+{% endblock %}

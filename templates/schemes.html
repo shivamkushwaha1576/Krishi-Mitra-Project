@@ -1,76 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Government Schemes</title>
-    <!-- This links your style.css file -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
+{% extends "layout.html" %} <!-- Step 1: Extend the layout -->
 
-    <!-- === Header === -->
-    <header>
-        <h1>Krishi Mitra - Government Schemes</h1>
-        
-        <!-- === Navigation Bar === -->
-        <nav>
-            <!-- This 'if' checks if the user is logged in -->
-            {% if current_user.is_authenticated %}
-                <!-- If logged in, show these links -->
-                <a href="/">Home</a>
-                <a href="/dashboard">Dashboard</a>
-                <a href="/community">Community Q&A</a>
-                <a href="/ai_helper">AI Assistant</a>
-                <a href="/schemes" class="active-nav">Schemes</a> <!-- 'active-nav' will highlight this -->
-                <a href="/logout" class="nav-logout">Logout ({{ current_user.username }})</a>
-            
-            {% else %}
-                <!-- If not logged in, show these links -->
-                <a href="/">Home</a>
-                <a href="/schemes" class="active-nav">Schemes</a>
-                <a href="/login" class="nav-login">Login</a>
-                <a href="/register" class="nav-register">Register</a>
-            {% endif %}
-        </nav>
-    </header>
+<!-- Step 2: Change title -->
+{% block title %}
+    Government Schemes
+{% endblock %}
 
-    <!-- === Main Content === -->
-    <main>
-        <h2 style="text-align: left;">Key Government Schemes for Farmers</h2>
-        
-        <!-- .info-card class is defined in style.css -->
-        <section class="info-card animate-on-load">
-            <h3>1. Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)</h3>
-            <p>Under this scheme, all small and marginal farmers receive minimum income support of up to ₹6,000 per year. This amount is deposited directly into their bank accounts in three installments of ₹2,000 each.</p>
-            <a href="#" class="btn-secondary">Learn More (Link)</a>
-        </section>
+<!-- Step 3: Put all content inside this block -->
+{% block content %}
+<main>
+    <h2 style="text-align: left;" class="animate-on-load">Key Government Schemes for Farmers</h2>
+    
+    <!-- The .info-card class is already defined in style.css -->
+    <section class="info-card animate-on-load">
+        <h3>1. Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)</h3>
+        <p>Under this scheme, all small and marginal farmers receive up to ₹6,000 per year as minimum income support. This amount is deposited directly into their bank accounts in three installments of ₹2,000 each.</p>
+        <a href="https://pmkisan.gov.in/" class="btn-secondary" target="_blank" rel="noopener noreferrer">Learn More (Official Link)</a>
+    </section>
 
-        <section class="info-card animate-on-load">
-            <h3>2. Pradhan Mantri Fasal Bima Yojana (PMFBY)</h3>
-            <p>This scheme provides insurance coverage and financial support to farmers in the event of crop failure due to natural calamities, pests, or diseases.</p>
-            <a href="#" class="btn-secondary">Learn More (Link)</a>
-        </section>
+    <section class="info-card animate-on-load">
+        <h3>2. Pradhan Mantri Fasal Bima Yojana (PMFBY)</h3>
+        <p>This scheme provides insurance coverage and financial support to farmers in the event of crop failure due to natural calamities, pests, or diseases.</p>
+        <a href="https://pmfby.gov.in/" class="btn-secondary" target="_blank" rel="noopener noreferrer">Learn More (Official Link)</a>
+    </section>
 
-        <section class="info-card animate-on-load">
-            <h3>3. Kisan Credit Card (KCC) Scheme</h3>
-            <p>This scheme aims to provide farmers with timely and easy access to credit (loans) for their farming and other needs.</p>
-            <a href="#" class="btn-secondary">Learn More (Link)</a>
-        </section>
+    <section class="info-card animate-on-load">
+        <h3>3. Kisan Credit Card (KCC) Scheme</h3>
+        <p>This scheme aims to provide farmers with timely and easy access to credit (loans) for their farming and other needs.</p>
+        <a href="https://www.sbi.co.in/web/agri-rural/agriculture-banking/crop-loan/kisan-credit-card-kcc" class="btn-secondary" target="_blank" rel="noopener noreferrer">Learn More (Example Link)</a>
+    </section>
 
-        <section class="info-card animate-on-load">
-            <h3>4. Soil Health Card Scheme</h3>
-            <p>Under this scheme, the government provides farmers with information about the nutrient status of their soil and recommends the correct dosage of fertilizers to improve crop yield.</p>
-            <a href="#" class="btn-secondary">Learn More (Link)</a>
-        </section>
+    <section class="info-card animate-on-load">
+        <h3>4. Soil Health Card Scheme</h3>
+        <p>Under this scheme, the government provides farmers with information about the nutrient status of their soil and recommends the correct dosage of fertilizers to improve crop yield.</p>
+        <a href="https://soilhealth.dac.gov.in/" class="btn-secondary" target="_blank" rel="noopener noreferrer">Learn More (Official Link)</a>
+    </section>
 
-    </main>
-
-    <!-- === Footer === -->
-    <footer>
-        <p>&copy; 2025 Krishi Mitra Portal | All rights reserved</p>
-    </footer>
-
-</body>
-</html>
-
+</main>
+{% endblock %}

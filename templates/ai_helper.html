@@ -1,91 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Assistant</title>
-    <!-- This links your style.css file -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
+{% extends "layout.html" %} <!-- Step 1: Extend the layout -->
 
-    <!-- === Header === -->
-    <header>
-        <h1>Krishi Mitra - AI Assistant</h1>
+<!-- Step 2: Change title -->
+{% block title %}
+    AI Assistant
+{% endblock %}
+
+<!-- Step 3: Put all content inside this block -->
+{% block content %}
+<main class="chat-container">
+
+    <!-- 1. Question form -->
+    <section class="form-box animate-on-load">
         
-        <!-- === Navigation Bar === -->
-        <nav>
-            <!-- This 'if' checks if the user is logged in -->
-            {% if current_user.is_authenticated %}
-                <!-- If logged in, show these links -->
-                <a href="/dashboard">Dashboard</a>
-                <a href="/community">Community Q&A</a>
-                <a href="/ai_helper">AI Assistant</a>
-                <a href="/schemes">Schemes</a>
-                <a href="/logout" class="nav-logout">Logout ({{ current_user.username }})</a>
-            
-            {% else %}
-                <!-- (This page is @login_required, so this part will likely not be seen,
-                     but it's good for fallback) -->
-                <a href="/login" class="nav-login">Login</a>
-                <a href="/register" class="nav-register">Register</a>
-            {% endif %}
-        </nav>
-    </header>
+        <h2>Ask Your Question</h2>
+        <p style="margin-bottom: 25px; color: #555;">Ask anything about farming, government schemes, or crop diseases.</p>
+        
+        <form method="POST" action="/ai_helper">
+            <div class="form-group">
+                <label for="user_question">Your Question:</label>
+                <textarea id="user_question" name="user_question" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn" id="ask-btn">Get Answer</button>
+        </form>
+    </section>
 
-    <!-- === Main Content === -->
-    <main class="chat-container">
+    <!-- 2. AI's answer (if it exists) -->
+    {% if answer %}
+    <div class="answer-box animate-on-load">
+        <h3>AI's Answer:</h3>
+        <!-- 'safe' filter allows rendering HTML (like <br>) -->
+        <!-- The AI answer will come from app.py (it should be set to English) -->
+        <p>{{ answer | safe }}</p> 
+    </div>
+    {% endif %}
 
-        <!-- (Flash messages can appear here) -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="{{ category|default('flash-message') }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+</main>
+{% endblock %}
 
-        <!-- 1. Form to ask a question -->
-        <section class="form-box animate-on-load">
-            <h2>Ask Your Question</h2>
-            <p style="margin-bottom: 25px; color: #555;">Ask anything about farming, government schemes, or crop diseases.</p>
-            
-            <form method="POST" action="/ai_helper">
-                <div class="form-group">
-                    <label for="user_question">Your Question:</label>
-                    <textarea id="user_question" name="user_question" rows="4" required></textarea>
-                </div>
-                <button type="submit" class="btn" id="ask-btn">Get Answer</button>
-            </form>
-        </section>
 
-        <!-- 2. AI's Answer (if it exists) -->
-        {% if answer %}
-        <div class="answer-box animate-on-load">
-            <h3>AI's Answer:</h3>
-            <!-- 'safe' filter allows rendering HTML (like <br>) -->
-            <p>{{ answer | safe }}</p> 
-        </div>
-        {% endif %}
-
-    </main>
-
-    <!-- === Footer === -->
-    <footer>
-        <p>&copy; 2025 Krishi Mitra Portal | All rights reserved</p>
-    </footer>
-
-    <!-- Script to change 'Ask' button to 'Loading...' -->
+<!-- Step 4: Put this page's script here -->
+{% block scripts %}
     <script>
+        // To change the 'Ask' button to 'Loading...'
         document.querySelector('form').addEventListener('submit', function() {
             var btn = document.getElementById('ask-btn');
             btn.disabled = true;
             btn.innerText = 'Thinking... (Loading...)';
         });
     </script>
-
-</body>
-</html>
-
+{% endblock %}

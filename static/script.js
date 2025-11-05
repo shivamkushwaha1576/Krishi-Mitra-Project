@@ -1,4 +1,4 @@
-// Ensures the JS code runs only after the HTML is loaded
+// This ensures the JS code runs only after the HTML is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
     fetchWeather();
     fetchMarketPrices();
@@ -16,10 +16,10 @@ async function fetchWeather() {
 
         const data = await response.json();
 
-        // Find the 'weather-data' div in HTML
+        // Find the 'weather-data' div in the HTML
         const weatherDiv = document.getElementById('weather-data');
         
-        // Convert the data into HTML
+        // Change the HTML to display the data
         weatherDiv.innerHTML = `
             <p><strong>Temperature:</strong> ${data.temperature}</p>
             <p><strong>Condition:</strong> ${data.condition}</p>
@@ -28,7 +28,6 @@ async function fetchWeather() {
     } catch (error) {
         console.error('Error fetching weather:', error);
         if (document.getElementById('weather-data')) {
-            // Updated error message in English
             document.getElementById('weather-data').innerHTML = '<p style="color: red;">Failed to load weather data. Please check your City in the dashboard.</p>';
         }
     }
@@ -46,11 +45,11 @@ async function fetchMarketPrices() {
 
         const data = await response.json(); // [{}, {}, {}]
 
-        // Find the 'prices-body' (table body) in HTML
+        // Find the 'prices-body' (table body) in the HTML
         const pricesBody = document.getElementById('prices-body');
         pricesBody.innerHTML = ''; // Remove the "Loading..." text
 
-        // Create a new table row for each crop
+        // Create a new row in the table for each crop
         data.forEach(item => {
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -63,9 +62,7 @@ async function fetchMarketPrices() {
     } catch (error) {
         console.error('Error fetching prices:', error);
         if (document.getElementById('prices-body')) {
-            // Updated error message in English
-            document.getElementById('prices-body').innerHTML = '<tr><td colspan="2" style="color: red;">Failed to load prices.</td></tr>';
+            pricesBody.innerHTML = '<tr><td colspan="2" style="color: red;">Failed to load prices.</td></tr>';
         }
     }
 }
-
