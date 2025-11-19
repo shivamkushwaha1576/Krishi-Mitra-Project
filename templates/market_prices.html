@@ -1,0 +1,154 @@
+<!-- layout.html से सब कुछ इनहेरिट करें -->
+{% extends 'layout.html' %}
+
+<!-- पेज का टाइटल सेट करें -->
+{% block title %}बाजार भाव - कृषि मित्र{% endblock %}
+
+<!-- पेज का मुख्य कंटेंट -->
+{% block content %}
+<div class="page-container">
+    
+    <!-- पेज हेडर -->
+    <div class="page-header">
+        <h1>लाइव बाजार भाव</h1>
+        <p>मध्य प्रदेश की प्रमुख मंडियों के ताज़ा भाव देखें। (Source: data.gov.in)</p>
+    </div>
+
+    <!-- शहर (मंडी) चुनने का विकल्प -->
+    <div class="market-selector">
+        <label for="city-select">शहर (मंडी) चुनें:</label>
+        <select id="city-select" name="mandi">
+            <!-- आपकी रिक्वेस्ट के अनुसार, जबलपुर डिफ़ॉल्ट है -->
+            <option value="Jabalpur">जबलपुर</option>
+            <option value="Bhopal">भोपाल</option>
+            <option value="Indore">इंदौर</option>
+            <option value="Gwalior">ग्वालियर</option>
+            <option value="Ujjain">उज्जैन</option>
+            <option value="Rewa">रीवा</option>
+            <option value="Sagar">सागर</option>
+        </select>
+        <!-- (नया) बटन को ID दिया गया है -->
+        <button class="btn-submit" id="price-btn">भाव देखें</button>
+    </div>
+
+    <!-- (नया) भाव दिखाने वाली टेबल (शुरू में लोडिंग...) -->
+    <div class="price-table-container">
+        <!-- (नया) लोडिंग इंडिकेटर -->
+        <div id="loading-indicator">
+            <p>लाइव भाव लोड हो रहे हैं...</p>
+            <div class="spinner"></div>
+        </div>
+        
+        <!-- (नया) एरर (Error) मैसेज के लिए -->
+        <div id="error-message" style="display: none;"></div>
+        
+        <!-- (नया) टेबल का हेडर -->
+        <table class="price-table" id="prices-table" style="display: none;">
+            <thead>
+                <tr>
+                    <th>फसल (Commodity)</th>
+                    <th>न्यूनतम (Min)</th>
+                    <th>अधिकतम (Max)</th>
+                    <th>औसत (Modal)</th>
+                </tr>
+            </thead>
+            <!-- (नया) JavaScript इस tbody को भरेगा -->
+            <tbody id="prices-tbody">
+                <!-- डेटा यहाँ लोड होगा -->
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- (!!! सबसे ज़रूरी: JavaScript !!!) -->
+<script>
+    // यह पक्का करें कि DOM (पेज) लोड हो गया है
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        // --- ज़रूरी चीज़ों को ढूँढें ---
+        const citySelect = document.getElementById('city-select');
+        const priceButton = document.getElementById('price-btn');
+        const pricesTable = document.getElementById('prices-table');
+        const pricesTbody = document.getElementById('prices-tbody');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const errorMessage = document.getElementById('error-message');
+
+        // --- 1. 'भाव देखें' बटन पर क्लिक का लॉजिक ---
+        priceButton.addEventListener('click', () => {
+            const selectedCity = citySelect.value;
+            fetchMarketPrices(selectedCity);
+        });
+
+        // --- 2. भाव (Price) लाने वाला मुख्य फ़ंक्शन ---
+        async function fetchMarketPrices(city) {
+            // 1. टेबल/एरर (Error) को छिपाएँ, लोडर (Loader) दिखाएँ
+            pricesTable.style.display = 'none';
+            errorMessage.style.display = 'none';
+            loadingIndicator.style.display = 'block';
+
+            try {
+                // 2. अपने app.py (सर्वर) को कॉल करें
+                const response = await fetch('/get-market-prices', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ city: city })
+                });
+
+                const data = await response.json();
+
+                // 3. अगर app.py ने एरर (Error) भेजा (जैसे: Key एक्टिवेट नहीं है)
+                if (!response.ok) {
+                    throw new Error(data.error || 'सर्वर से एरर (Error) आया');
+                }
+                
+                // 4. अगर डेटा आ गया, तो टेबल को भरें
+                updatePriceTable(data);
+
+            } catch (error) {
+                // 5. अगर कुछ भी गलत हुआ
+                console.error('Fetch Error:', error);
+                errorMessage.textContent = `क्षमा करें, डेटा लोड करने में समस्या हुई: ${error.message}`;
+                errorMessage.style.display = 'block';
+                loadingIndicator.style.display = 'none';
+            }
+        }
+
+        // --- 3. टेबल को अपडेट करने वाला फ़ंक्शन ---
+        function updatePriceTable(records) {
+            // 1. पुरानी टेबल खाली करें
+            pricesTbody.innerHTML = '';
+            
+            // 2. अगर कोई रिकॉर्ड (record) नहीं है
+            if (records.length === 0) {
+                errorMessage.textContent = 'इस मंडी के लिए आज कोई डेटा उपलब्ध नहीं है।';
+                errorMessage.style.display = 'block';
+                loadingIndicator.style.display = 'none';
+                return;
+            }
+
+            // 3. हर रिकॉर्ड (record) के लिए टेबल में एक 'row' (पंक्ति) बनाएँ
+            records.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.commodity}</td>
+                    <td>₹${item.min_price} / क्विंटल</td>
+                    <td>₹${item.max_price} / क्विंटल</td>
+                    <td>₹${item.modal_price} / क्विंटल</td>
+                `;
+                pricesTbody.appendChild(row);
+            });
+
+            // 4. लोडर (Loader) छिपाएँ, टेबल दिखाएँ
+            loadingIndicator.style.display = 'none';
+            pricesTable.style.display = 'table';
+        }
+
+        // --- 4. पेज लोड होते ही "Jabalpur" का भाव अपने आप (automatically) लाएँ ---
+        fetchMarketPrices('Jabalpur');
+
+    });
+</script>
+{% endblock %}

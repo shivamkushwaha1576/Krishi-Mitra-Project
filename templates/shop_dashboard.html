@@ -1,0 +1,82 @@
+<!-- layout.html से सब कुछ इनहेरिट करें -->
+{% extends 'layout.html' %}
+
+<!-- पेज का टाइटल सेट करें -->
+{% block title %}शॉप डैशबोर्ड - कृषि मित्र{% endblock %}
+
+<!-- पेज का मुख्य कंटेंट -->
+{% block content %}
+<div class="page-container dashboard-container">
+    
+    <!-- पेज हेडर -->
+    <div class="page-header">
+        <h1>{{ current_user.shop_name }} का डैशबोर्ड</h1>
+        <p>नमस्ते, {{ current_user.fullname }}! यहाँ आप अपनी इन्वेंटरी (सामान) मैनेज कर सकते हैं।</p>
+    </div>
+
+    <div class="inventory-widgets">
+        
+        <!-- 1. नया आइटम जोड़ने का फ़ॉर्म (कीमत के साथ) -->
+        <div class="widget-card">
+            <h3>नया आइटम इन्वेंटरी में जोड़ें</h3>
+            <form class="simple-form" action="{{ url_for('add_inventory') }}" method="POST">
+                
+                <div class="form-group">
+                    <label for="item_name">आइटम का नाम (जैसे: यूरिया, ट्रैक्टर)</label>
+                    <input type="text" id="item_name" name="item_name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="quantity">मात्रा (जैसे: 50 बोरी, 2 उपलब्ध)</label>
+                    <input type="text" id="quantity" name="quantity" required>
+                </div>
+
+                <!-- (!!! नया !!!) कीमत/किराया -->
+                <div class="form-group">
+                    <label for="price">कीमत / किराया (Price)</label>
+                    <input type="text" id="price" name="price" placeholder="जैसे: ₹300/बोरी या ₹500/घंटा" required>
+                </div>
+
+                <button type="submit" class="btn-submit">आइटम जोड़ें</button>
+            </form>
+        </div>
+
+        <!-- 2. मौजूदा इन्वेंटरी की लिस्ट -->
+        <div class="widget-card">
+            <h3>मेरी मौजूदा इन्वेंटरी</h3>
+            {% if inventory %}
+                <table class="inventory-table">
+                    <thead>
+                        <tr>
+                            <th>आइटम</th>
+                            <th>मात्रा</th>
+                            <th>कीमत</th> <!-- (नया कॉलम) -->
+                            <th>एक्शन</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in inventory %}
+                        <tr>
+                            <td><strong>{{ item.item_name }}</strong></td>
+                            <td>{{ item.quantity }}</td>
+                            <td style="color: var(--primary-color); font-weight: bold;">
+                                {{ item.price }}
+                            </td>
+                            <td>
+                                <form action="{{ url_for('delete_inventory', item_id=item.id) }}" method="POST" style="display:inline;">
+                                    <button type="submit" class="btn-delete"><i class="fa-solid fa-trash"></i> डिलीट</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>आपकी इन्वेंटरी में अभी कोई आइटम नहीं है।</p>
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

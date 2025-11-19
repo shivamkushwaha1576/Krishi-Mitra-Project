@@ -1,265 +1,391 @@
-# --- 1. Import all necessary libraries ---
-from flask import Flask, render_template, jsonify, request, redirect, url_for, flash
-from datetime import datetime # For timestamps
-import requests # For API calls
-from flask_sqlalchemy import SQLAlchemy # For the database
-from flask_login import (
-    LoginManager, 
-    UserMixin, 
-    login_user, 
-    login_required, 
-    logout_user, 
-    current_user
-) # For user login
-from flask_bcrypt import Bcrypt # For password encryption
-import os # (This is needed to create folders)
+import os
+import io
+import base64
+import requests
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
+from dotenv import load_dotenv
+import google.generativeai as genai
+from PIL import Image
 
-# --- 2. Flask App Configuration ---
+# --- 1. कॉन्फ़िगरेशन और सेटअप ---
+
+load_dotenv()
+
 app = Flask(__name__)
-# Will create database.db next to app.py
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db' 
-app.config['SECRET_KEY'] = 'any_secret_key_will_do' # For securing the session
+app.config['SECRET_KEY'] = 'your_secret_key_here'
 
-# --- 3. Initialize Extensions ---
+# API Keys
+GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
+OPENWEATHER_API_KEY = os.getenv('OPENWEATHER_API_KEY')
+
+app.config['GOOGLE_API_KEY'] = GOOGLE_API_KEY
+app.config['OPENWEATHER_API_KEY'] = OPENWEATHER_API_KEY
+
+# Gemini AI सेटअप
+if GOOGLE_API_KEY:
+    genai.configure(api_key=GOOGLE_API_KEY)
+
+# डेटाबेस कॉन्फ़िगरेशन
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
-login_manager.login_view = 'login' # If not logged in, redirect to /login
-login_manager.login_message = "Please log in to access this page."
-login_manager.login_message_category = "flash-message" # (To match our CSS)
+login_manager.login_view = 'login'
+login_manager.login_message_category = 'info'
 
-# --- 4. Database Models ---
 
-# 4a. Table for Users
+# --- 2. डेटाबेस मॉडल ---
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(30), unique=True, nullable=False)
-    password = db.Column(db.String(80), nullable=False)
-    city = db.Column(db.String(50), nullable=True, default='Jabalpur') 
-    # Connects User and Post (will be used by 'author')
-    posts = db.relationship('Post', backref='author', lazy=True)
+    fullname = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(60), nullable=False)
+    role = db.Column(db.String(20), nullable=False, default='farmer')
+    shop_name = db.Column(db.String(100), nullable=True)
+    address = db.Column(db.String(200), nullable=True)
+    phone = db.Column(db.String(20), nullable=True)
+    
+    inventory_items = db.relationship('InventoryItem', backref='owner', lazy=True)
+    soil_samples = db.relationship('SoilSample', backref='farmer_owner', lazy=True)
 
-# 4b. Table for Questions/Posts
-class Post(db.Model):
+class InventoryItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    # This creates a relationship with the 'User' table
+    item_name = db.Column(db.String(100), nullable=False)
+    quantity = db.Column(db.String(100), nullable=False)
+    price = db.Column(db.String(100), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-# --- 5. Flask-Login User Loader ---
-# This function tells Flask-Login how to load a user from the session
+class SoilSample(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sample_id = db.Column(db.String(100), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    status = db.Column(db.String(50), nullable=False, default='Pending')
+
+
+# --- 3. यूज़र ऑथेंटिकेशन ---
+
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return db.session.get(User, int(user_id))
 
-# --- 6. Main Page Routes ---
-
-# 6a. Home Page (http://127.0.0.1:5000)
-@app.route('/')
-def index():
-    return render_template('index.html') # This will show 'index.html' (Weather/Market)
-
-# 6b. Login Page
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('dashboard')) # If already logged in, send to Dashboard
-        
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        user = User.query.filter_by(username=username).first()
-        
-        if user and bcrypt.check_password_hash(user.password, password):
-            login_user(user) # Logs the user in
-            flash('Login Successful!', 'flash-message-success') # (Success message)
-            return redirect(url_for('dashboard')) # Send to Dashboard
-        else:
-            flash('Incorrect username or password.') # (This will be red by default)
-
-    return render_template('login.html') # This will only show 'login.html' on /login
-
-# 6c. Register Page
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if current_user.is_authenticated:
-        return redirect(url_for('dashboard')) # If already logged in, send to Dashboard
-
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+        fullname = request.form.get('fullname')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        phone = request.form.get('phone')
+        address = request.form.get('address')
         
-        # Create the user with a default city (Jabalpur)
-        new_user = User(username=username, password=hashed_password, city='Jabalpur')
-        db.session.add(new_user)
-        try:
-            db.session.commit()
-            flash('Account created! You can now log in.', 'flash-message-success')
-            return redirect(url_for('login'))
-        except Exception as e:
-            db.session.rollback()
-            flash('That username is already taken.')
-            print(f"Register Error: {e}")
+        if User.query.filter_by(email=email).first():
+            flash('यह ईमेल पहले से रजिस्टर है।', 'warning')
             return redirect(url_for('register'))
-            
+
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+        new_user = User(fullname=fullname, email=email, password=hashed_password, role='farmer', phone=phone, address=address)
+        db.session.add(new_user)
+        db.session.commit()
+        flash('रजिस्ट्रेशन सफल! कृपया लॉगिन करें।', 'success')
+        return redirect(url_for('login'))
     return render_template('register.html')
 
-# 6d. Logout
+@app.route('/register-shop', methods=['GET', 'POST'])
+def register_shop():
+    if request.method == 'POST':
+        fullname = request.form.get('fullname')
+        shop_name = request.form.get('shop_name')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        phone = request.form.get('phone')
+        address = request.form.get('address')
+
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+        new_user = User(fullname=fullname, email=email, password=hashed_password, role='shop', shop_name=shop_name, phone=phone, address=address)
+        db.session.add(new_user)
+        db.session.commit()
+        flash('शॉप रजिस्ट्रेशन सफल!', 'success')
+        return redirect(url_for('login'))
+    return render_template('register_shop.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        user = User.query.filter_by(email=email).first()
+        if user and bcrypt.check_password_hash(user.password, password):
+            login_user(user)
+            flash('लॉगिन सफल!', 'success')
+            return redirect(url_for('shop_dashboard') if user.role == 'shop' else url_for('dashboard'))
+        else:
+            flash('लॉगिन फेल। ईमेल या पासवर्ड चेक करें।', 'danger')
+    return render_template('login.html')
+
 @app.route('/logout')
-@login_required 
+@login_required
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('home'))
 
-# --- 7. Protected Page Routes ---
 
-# 7a. Dashboard
+# --- 4. मुख्य फीचर्स ---
+
 @app.route('/dashboard')
-@login_required # (This is required here)
+@login_required
 def dashboard():
-    return render_template('dashboard.html')
+    if current_user.role != 'farmer': return redirect(url_for('home'))
+    my_rentals = InventoryItem.query.filter_by(user_id=current_user.id).all()
+    return render_template('dashboard.html', my_rentals=my_rentals)
 
-# 7b. Update City
-@app.route('/update_city', methods=['POST'])
+@app.route('/shop-dashboard')
 @login_required
-def update_city():
-    new_city = request.form['city']
-    current_user.city = new_city
-    db.session.commit()
-    flash('Your city has been updated!', 'flash-message-success')
-    return redirect(url_for('dashboard'))
+def shop_dashboard():
+    if current_user.role != 'shop': return redirect(url_for('home'))
+    inventory = InventoryItem.query.filter_by(user_id=current_user.id).all()
+    return render_template('shop_dashboard.html', inventory=inventory)
 
-# 7c. Schemes Page
-@app.route('/schemes')
-def schemes():
-    return render_template('schemes.html')
-
-# 7d. Community Q&A Page
-@app.route('/community')
+@app.route('/add-inventory', methods=['POST'])
 @login_required
-def community():
-    all_posts = Post.query.order_by(Post.timestamp.desc()).all()
-    return render_template('community.html', posts=all_posts)
+def add_inventory():
+    item_name = request.form.get('item_name')
+    quantity = request.form.get('quantity')
+    price = request.form.get('price')
+    if item_name:
+        new_item = InventoryItem(item_name=item_name, quantity=quantity, price=price, user_id=current_user.id)
+        db.session.add(new_item)
+        db.session.commit()
+        flash('आइटम जोड़ा गया!', 'success')
+    return redirect(url_for('shop_dashboard') if current_user.role == 'shop' else url_for('dashboard'))
 
-# 7e. Ask a Post
-@app.route('/ask_post', methods=['POST'])
+@app.route('/delete-inventory/<int:item_id>', methods=['POST'])
 @login_required
-def ask_post():
-    post_content = request.form['post_content']
-    new_post = Post(content=post_content, author=current_user)
-    db.session.add(new_post)
-    db.session.commit()
-    flash('Your post has been submitted!', 'flash-message-success')
-    return redirect(url_for('community'))
+def delete_inventory(item_id):
+    item = db.session.get(InventoryItem, item_id)
+    if item and item.user_id == current_user.id:
+        db.session.delete(item)
+        db.session.commit()
+        flash('आइटम हटाया गया।', 'success')
+    return redirect(url_for('shop_dashboard') if current_user.role == 'shop' else url_for('dashboard'))
 
-# 7f. About Us Page (New Feature)
-@app.route('/about')
-def about():
-    return render_template('about.html')
-
-# --- 8. AI Helper (Gemini) Routes ---
-
-# 8a. Function to call the AI
-def run_gemini(user_question):
-    # !!! IMPORTANT: Get your NEW, SAFE API Key from Google AI Studio !!!
-    API_KEY = "AIzaSyA4GkVGjFp4-bEPTW72A30noH1hxf62GBU" 
-    API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key={API_KEY}"
-    
-    # (Simple English Prompt)
-    system_prompt = (
-        "You are 'Krishi Mitra', an AI assistant for Indian farmers."
-        "You MUST provide all answers in ENGLISH."
-        "Your answers should be short, easy to understand, and focused on Indian agriculture (crops, weather, government schemes, soil)."
-    )
-    
-    payload = {
-        "contents": [{"parts": [{"text": user_question}]}],
-        "systemInstruction": {"parts": [{"text": system_prompt}]}
-    }
-    
-    headers = {"Content-Type": "application/json"}
-
-    try:
-        response = requests.post(API_URL, json=payload, headers=headers)
-        response.raise_for_status() 
-        result = response.json()
-        text_response = result['candidates'][0]['content']['parts'][0]['text']
-        html_response = text_response.replace('\n', '<br>')
-        return html_response
-    except Exception as e:
-        print(f"Gemini API Error: {e}")
-        # (Simple English Error)
-        return ("Sorry, the AI assistant is currently unavailable. Please try again later. "
-                "Error: " + str(e))
-
-# 8b. Route to display the AI page
-@app.route('/ai_helper', methods=['GET', 'POST'])
-@login_required
-def ai_helper():
-    answer = None
+@app.route('/tool-search', methods=['GET', 'POST'])
+def tool_search():
+    results = []
+    search_term = ""
+    location_term = ""
     if request.method == 'POST':
-        user_question = request.form['user_question']
-        answer = run_gemini(user_question)
-    return render_template('ai_helper.html', answer=answer)
+        search_term = request.form.get('search_query')
+        location_term = request.form.get('location')
+        query = InventoryItem.query
+        if search_term: query = query.filter(InventoryItem.item_name.ilike(f"%{search_term}%"))
+        if location_term: query = query.join(User).filter(User.address.ilike(f"%{location_term}%"))
+        results = query.all()
+    return render_template('tool_search.html', results=results)
 
-# --- 9. Background API Routes (for JavaScript) ---
 
-# 9a. Weather API
-@app.route('/api/weather')
-def get_weather():
-    if current_user.is_authenticated:
-        city = current_user.city # User's saved city
-    else:
-        city = "Jabalpur" # Default city (if not logged in)
+# --- 5. AI फीचर्स (SMART FIX) ---
 
-    # !!! IMPORTANT: This is your Weather API Key !!!
-    WEATHER_API_KEY = "c0dd28132a0d93087b097b391b6b6feb" 
+# 🛠️ हेल्पर फंक्शन: यह अपने आप सबसे अच्छा काम करने वाला मॉडल ढूँढ लेगा
+def get_best_model():
     try:
-        base_url = "https://api.openweathermap.org/data/2.5/weather" # (HTTPS Fix)
-        full_url = f"{base_url}?q={city}&appid={WEATHER_API_KEY}&units=metric&lang=en" 
-        response = requests.get(full_url)
-        data = response.json() 
-
-        weather_data = {
-            "temperature": f"{data['main']['temp']}°C",
-            "condition": data['weather'][0]['description'].capitalize(),
-            "humidity": f"{data['main']['humidity']}%"
-        }
-        return jsonify(weather_data)
+        # उपलब्ध मॉडल्स की लिस्ट निकालें
+        all_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+        
+        # हमारी पसंद (Priority List)
+        priority_list = [
+            'models/gemini-1.5-flash',
+            'gemini-1.5-flash',
+            'models/gemini-1.5-flash-001',
+            'models/gemini-1.5-flash-latest',
+            'models/gemini-1.5-pro'
+        ]
+        
+        # प्राथमिकता सूची में से चेक करें
+        for p in priority_list:
+            if p in all_models:
+                print(f"✅ Selected Model: {p}")
+                return p
+        
+        # अगर कोई न मिले, तो कोई भी 'flash' वाला
+        for m in all_models:
+            if 'flash' in m.lower():
+                print(f"✅ Selected Fallback Model: {m}")
+                return m
+                
+        # अंतिम विकल्प
+        if all_models:
+            return all_models[0]
+            
     except Exception as e:
-        print(f"Weather API Error: {e}")
-        # If user's city is wrong, show default
-        city = "Jabalpur"
-        base_url = "https://api.openweathermap.org/data/2.5/weather" # (HTTPS Fix)
-        full_url = f"{base_url}?q={city}&appid={WEATHER_API_KEY}&units=metric&lang=en"
-        response = requests.get(full_url)
-        data = response.json()
-        weather_data = {
-            "temperature": f"{data['main']['temp']}°C",
-            "condition": data['weather'][0]['description'].capitalize(),
-            "humidity": f"{data['main']['humidity']}%"
-        }
-        return jsonify(weather_data)
+        print(f"Warning in model selection: {e}")
+    
+    return 'models/gemini-1.5-flash' # Default safe bet
 
-# 9b. Market Prices API
-@app.route('/api/market_prices')
-def get_market_prices():
-    # (Placeholder data - now in English)
-    prices = [
-        {"crop": "Wheat", "price": "₹2250 / Quintal"},
-        {"crop": "Tomato", "price": "₹1800 / Quintal"},
-        {"crop": "Potato", "price": "₹2100 / Quintal"}
-    ]
-    return jsonify(prices)
 
-# --- 10. Run the App (Simpler & Fixed) ---
+# A. फसल ग्रेडिंग
+@app.route('/crop-grading', methods=['GET', 'POST'])
+def crop_grading():
+    result = None
+    if request.method == 'POST':
+        if 'file' not in request.files: return render_template('crop_grading.html', result="No file")
+        file = request.files['file']
+        if file.filename == '': return render_template('crop_grading.html', result="No selected file")
+        
+        if file:
+            try:
+                image_data = file.read()
+                image_parts = [{"mime_type": file.content_type, "data": image_data}]
+                
+                prompt = """
+                फसल विश्लेषण रिपोर्ट (हिंदी में HTML):
+                1. <h3>गुणवत्ता ग्रेड:</h3> (A/B/C)
+                2. <h3>स्थिति:</h3> ताज़गी और बीमारी
+                3. <h3>शेल्फ लाइफ:</h3> कितने दिन चलेगा?
+                4. <h3>कीमत टिप:</h3> व्यापारी से क्या बोलें?
+                """
+                
+                # स्मार्ट मॉडल सेलेक्शन
+                selected_model = get_best_model()
+                model = genai.GenerativeModel(selected_model)
+                response = model.generate_content([prompt, image_parts[0]])
+                result = response.text
+
+            except Exception as e:
+                if "429" in str(e):
+                    result = f"<p style='color:red'><b>कोटा पूरा हो गया:</b> कृपया 1 मिनट इंतज़ार करें।</p>"
+                else:
+                    result = f"<p style='color:red'>AI Error: {str(e)}</p>"
+
+    return render_template('crop_grading.html', result=result)
+
+# B. रोग पहचान
+@app.route('/plant-disease', methods=['GET', 'POST'])
+@login_required
+def plant_disease():
+    diagnosis_result = None
+    uploaded_image_b64 = None
+    if request.method == 'POST':
+        file = request.files.get('leaf-image')
+        if file and file.filename:
+            try:
+                img_bytes = file.read()
+                uploaded_image_b64 = base64.b64encode(img_bytes).decode('utf-8')
+                
+                # स्मार्ट मॉडल सेलेक्शन
+                selected_model = get_best_model()
+                model = genai.GenerativeModel(selected_model)
+                
+                prompt = "यह पौधे की पत्ती है। बीमारी और इलाज बताओ (हिंदी में)।"
+                response = model.generate_content([prompt, {'mime_type': file.content_type, 'data': img_bytes}])
+                diagnosis_result = response.text
+            except Exception as e:
+                diagnosis_result = f"Error: {str(e)}"
+    return render_template('plant_disease.html', diagnosis_result=diagnosis_result, uploaded_image_b64=uploaded_image_b64)
+
+# C. चैटबॉट API (फिक्स्ड)
+@app.route('/ask-ai', methods=['POST'])
+def ask_ai():
+    try:
+        user_message = request.json.get('message')
+        if not user_message: return jsonify({'error': 'Empty'})
+        
+        # स्मार्ट मॉडल सेलेक्शन
+        selected_model = get_best_model()
+        model = genai.GenerativeModel(selected_model)
+        
+        response = model.generate_content(f"किसान सहायक के रूप में हिंदी में जवाब दें: {user_message}")
+        return jsonify({'answer': response.text})
+    except Exception as e:
+        print(f"Chatbot Error: {e}")
+        if "429" in str(e):
+             return jsonify({'answer': 'AI सेवा अभी व्यस्त है (कोटा फुल)। कृपया 1 मिनट बाद पूछें।'})
+        return jsonify({'answer': f'AI एरर: {str(e)}'})
+
+
+# --- 6. अन्य टूल्स ---
+
+@app.route('/get-weather', methods=['POST'])
+def get_weather():
+    data = request.json
+    city = data.get('city')
+    
+    weather_api_key = app.config['OPENWEATHER_API_KEY']
+    
+    if not weather_api_key:
+        return jsonify({'error': 'Weather API Key सर्वर पर सेट नहीं है'}), 500
+
+    if not city:
+        return jsonify({'error': 'No city provided'}), 400
+        
+    # OpenWeatherMap API URL
+    weather_url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={weather_api_key}&units=metric&lang=hi"
+    
+    try:
+        api_response = requests.get(weather_url)
+        weather_data = api_response.json()
+        
+        # अगर API से एरर आता है (जैसे शहर नहीं मिला)
+        if api_response.status_code != 200:
+            return jsonify({'error': weather_data.get('message', 'शहर नहीं मिला')}), 404
+            
+        # सही डेटा भेजें
+        return jsonify({
+            'city_name': weather_data['name'],
+            'temp': weather_data['main']['temp'],
+            'description': weather_data['weather'][0]['description'],
+            'icon': weather_data['weather'][0]['icon'],
+            'temp_max': weather_data['main']['temp_max'],
+            'temp_min': weather_data['main']['temp_min'],
+            'wind_speed': weather_data['wind']['speed'],
+            'humidity': weather_data['main']['humidity']
+        })
+
+    except Exception as e:
+        print(f"Weather Exception: {e}")
+        return jsonify({'error': 'मौसम सर्वर से कनेक्ट करने में कोई समस्या हुई।'}), 500
+
+@app.route('/soil-testing', methods=['GET', 'POST'])
+@login_required
+def soil_testing():
+    if request.method == 'POST':
+        sample_id = request.form.get('sample_id')
+        if sample_id:
+            db.session.add(SoilSample(sample_id=sample_id, user_id=current_user.id))
+            db.session.commit()
+            flash('सैंपल जमा हो गया!', 'success')
+            return redirect(url_for('dashboard'))
+    return render_template('soil_testing.html')
+
+
+# --- 7. वेबसाइट पेज ---
+
+@app.route('/')
+def home(): return render_template('index.html')
+@app.route('/contact')
+def contact(): return render_template('contact.html')
+@app.route('/about')
+def about(): return render_template('about.html')
+@app.route('/gallery')
+def gallery(): return render_template('gallery.html')
+@app.route('/schemes')
+def schemes(): return render_template('schemes.html')
+@app.route('/krishi-yantra')
+def krishi_yantra(): return render_template('krishi_yantra.html')
+@app.route('/modern-farming')
+def modern_farming(): return render_template('modern_pfarming.html')
+@app.route('/fertilizer-id')
+def fertilizer_id(): return render_template('fertilizer_id.html')
+@app.route('/weather')
+def weather(): return render_template('weather.html')
+@app.route('/market-prices')
+def market_prices(): return render_template('market_prices.html')
+
 if __name__ == '__main__':
-    # Before starting the server, create the database tables (next to app.py)
     with app.app_context():
         db.create_all()
-        print("Database tables checked/created next to app.py.")
-
-    # Now, run the app
     app.run(debug=True)

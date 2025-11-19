@@ -1,0 +1,102 @@
+<!-- layout.html से सब कुछ इनहेरिट करें -->
+{% extends 'layout.html' %}
+
+<!-- पेज का टाइटल सेट करें -->
+{% block title %}उन्नतशील खेती - कृषि मित्र{% endblock %}
+
+<!-- पेज का मुख्य कंटेंट -->
+{% block content %}
+<div class="page-container">
+    
+    <!-- पेज हेडर -->
+    <div class="page-header">
+        <h1>उन्नतशील खेती की तकनीकें</h1>
+        <p>कम लागत में अधिक और बेहतर उपज पाने के लिए आधुनिक वैज्ञानिक तरीके।</p>
+    </div>
+
+    <!-- 
+        नोट: हम "schemes.html" वाली CSS क्लास का ही इस्तेमाल कर रहे हैं 
+        ताकि डिजाइन एक जैसा रहे।
+    -->
+    <div class="schemes-list">
+        
+        <!-- तकनीक 1: ड्रिप सिंचाई -->
+        <div class="scheme-card">
+            <div class="scheme-icon">
+                <i class="fa-solid fa-droplet"></i>
+            </div>
+            <div class="scheme-content">
+                <h2>टपक सिंचाई (Drip Irrigation)</h2>
+                <p>इस विधि में पानी को बूंद-बूंद करके सीधे पौधों की जड़ों तक पहुँचाया जाता है। इससे पानी की 30% से 70% तक बचत होती है।</p>
+                <!-- "AI Ask" बटन -->
+                <button class="btn-learn-more ai-ask-button" 
+                        data-ask="टपक सिंचाई (Drip Irrigation) क्या है और इसके क्या फायदे हैं?">
+                    AI से पूछें <i class="fa-solid fa-robot"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- तकनीक 2: पॉलीहाउस फार्मिंग -->
+        <div class="scheme-card">
+            <div class="scheme-icon">
+                <i class="fa-solid fa-house-chimney-window"></i>
+            </div>
+            <div class="scheme-content">
+                <h2>पॉलीहाउस खेती (Polyhouse Farming)</h2>
+                <p>पॉलीथीन से बने ढाँचे के अंदर खेती करना, जो फसलों को खराब मौसम, कीटों और बीमारियों से बचाता है। बे-मौसम सब्जियाँ उगाने के लिए उत्तम।</p>
+                <button class="btn-learn-more ai-ask-button" 
+                        data-ask="पॉलीहाउस खेती (Polyhouse Farming) क्या है और इसमें क्या उगा सकते हैं?">
+                    AI से पूछें <i class="fa-solid fa-robot"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- तकनीक 3: हाइड्रोपोनिक्स -->
+        <div class="scheme-card">
+            <div class="scheme-icon">
+                <i class="fa-solid fa-water"></i>
+            </div>
+            <div class="scheme-content">
+                <h2>हाइड्रोपोनिक्स (Hydroponics)</h2>
+                <p>बिना मिट्टी के, केवल पानी और पोषक तत्वों के घोल में पौधे उगाने की तकनीक। यह शहरी क्षेत्रों और कम जगह के लिए बहुत प्रभावी है।</p>
+                <button class="btn-learn-more ai-ask-button" 
+                        data-ask="हाइड्रोपोनिक्स (Hydroponics) खेती क्या है और इसे कैसे शुरू करें?">
+                    AI से पूछें <i class="fa-solid fa-robot"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- तकनीक 4: जैविक खेती -->
+        <div class="scheme-card">
+            <div class="scheme-icon">
+                <i class="fa-solid fa-leaf"></i>
+            </div>
+            <div class="scheme-content">
+                <h2>जैविक खेती (Organic Farming)</h2>
+                <p>रासायनिक उर्वरकों और कीटनाशकों की जगह गोबर खाद, केंचुआ खाद (vermicompost) और प्राकृतिक तरीकों का उपयोग करना।</p>
+                <button class="btn-learn-more ai-ask-button" 
+                        data-ask="जैविक खेती (Organic Farming) के क्या फायदे हैं और इसे कैसे करें?">
+                    AI से पूछें <i class="fa-solid fa-robot"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- तकनीक 5: प्रेसिजन फार्मिंग -->
+        <div class="scheme-card">
+            <div class="scheme-icon">
+                <i class="fa-solid fa-satellite-dish"></i>
+            </div>
+            <div class="scheme-content">
+                <h2>प्रेसिजन फार्मिंग (Precision Farming)</h2>
+                <p>जीपीएस (GPS), ड्रोन और सेंसर का उपयोग करके खेत के हर हिस्से की ज़रूरत के हिसाब से सही मात्रा में खाद, पानी और बीज देना।</p>
+                <button class="btn-learn-more ai-ask-button" 
+                        data-ask="प्रेसिजन फार्मिंग (Precision Farming) क्या है?">
+                    AI से पूछें <i class="fa-solid fa-robot"></i>
+                </button>
+            </div>
+        </div>
+        
+    </div> <!-- .schemes-list -->
+
+</div> <!-- .page-container -->
+{% endblock %}

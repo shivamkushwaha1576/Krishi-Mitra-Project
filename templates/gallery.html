@@ -1,0 +1,74 @@
+<!-- layout.html से सब कुछ इनहेरिट करें -->
+{% extends 'layout.html' %}
+
+<!-- पेज का टाइटल सेट करें -->
+{% block title %}गैलरी - कृषि मित्र{% endblock %}
+
+<!-- पेज का मुख्य कंटेंट -->
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1>हमारी गैलरी</h1>
+        <p>हमारी कृषि गतिविधियों और सफलताओं की तस्वीरें।</p>
+    </div>
+    
+    <!-- गैलरी ग्रिड -->
+    <div class="gallery-grid">
+        
+        <!-- तस्वीर 1: (बदला हुआ) -->
+        <div class="gallery-item">
+            <!-- (यहाँ अपनी तस्वीर का नाम डालें) -->
+            <img src="{{ url_for('static', filename='images/farm.jpg') }}" alt="उन्नत खेती">
+            <div class="caption">
+                <h3>उन्नत खेती</h3>
+            </div>
+        </div>
+        
+        <!-- तस्वीर 2: (बदला हुआ) -->
+        <div class="gallery-item">
+            <!-- (यहाँ अपनी तस्वीर का नाम डालें) -->
+            <img src="{{ url_for('static', filename='images/soil.jpg') }}" alt="मिट्टी जाँच">
+            <div class="caption">
+                <h3>मिट्टी जाँच</h3>
+            </div>
+        </div>
+        
+        <!-- तस्वीर 3: (बदला हुआ) -->
+        <div class="gallery-item">
+            <!-- (यहाँ अपनी तस्वीर का नाम डालें) -->
+            <img src="{{ url_for('static', filename='images/yantra.jpg') }}" alt="कृषि यन्त्र">
+            <div class="caption">
+                <h3>आधुनिक कृषि यन्त्र</h3>
+            </div>
+        </div>
+        
+        <!-- तस्वीर 4: (बदला हुआ) -->
+        <div class="gallery-item">
+            <!-- (यहाँ अपनी तस्वीर का नाम डालें) -->
+            <img src="{{ url_for('static', filename='images/meeting.jpg') }}" alt="किसान गोष्ठी">
+            <div class="caption">
+                <h3>किसान गोष्ठी</h3>
+            </div>
+        </div>
+
+        <!-- तस्वीर 5: (बदला हुआ) -->
+        <div class="gallery-item">
+            <!-- (यहाँ अपनी तस्वीर का नाम डालें) -->
+            <img src="{{ url_for('static', filename='images/harvest.jpg') }}" alt="फसल कटाई">
+            <div class="caption">
+                <h3>फसल कटाई</h3>
+            </div>
+        </div>
+
+        <!-- तस्वीर 6: (बदला हुआ) -->
+        <div class="gallery-item">
+            <!-- (यहाँ अपनी तस्वीर का नाम डालें) -->
+            <img src="{{ url_for('static', filename='images/drone.jpg') }}" alt="ड्रोन तकनीक">
+            <div class="caption">
+                <h3>ड्रोन तकनीक</h3>
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

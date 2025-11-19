@@ -1,0 +1,39 @@
+<!-- layout.html से सब कुछ इनहेरिट करें -->
+{% extends 'layout.html' %}
+
+<!-- पेज का टाइटल सेट करें -->
+{% block title %}मिट्टी जाँच - कृषि मित्र{% endblock %}
+
+<!-- पेज का मुख्य कंटेंट -->
+{% block content %}
+    <div class="page-container">
+        <h1>मिट्टी जाँच (Soil Testing)</h1>
+        <p>यह पेज मिट्टी की जाँच से संबंधित जानकारी और सेवाओं के लिए है।</p>
+        
+        <!-- (!!! यह फ़ॉर्म अब "Live" (functional) है !!!) -->
+        <!-- 
+            - 'action' इसे app.py में /soil-testing रूट पर भेजता है
+            - 'method="POST"' डेटा को सबमिट करता है
+         -->
+        <form class="simple-form" action="{{ url_for('soil_testing') }}" method="POST">
+            
+            <!-- (नया) किसान का नाम (लॉग इन यूज़र से अपने आप भरा हुआ) -->
+            <div class="form-group">
+                <label for="farmer-name">किसान का नाम:</label>
+                <!-- 
+                    - 'current_user' (जो लॉग इन है) उसका नाम यहाँ अपने आप भर जाएगा
+                    - 'disabled' इसे बदलने से रोकता है
+                 -->
+                <input type="text" id="farmer-name" name="farmer-name" value="{{ current_user.fullname }}" disabled>
+            </div>
+            
+            <div class="form-group">
+                <label for="sample-id">सैंपल आई.डी.:</label>
+                <!-- (नया) 'name="sample_id"' इसे app.py से जोड़ता है -->
+                <input type="text" id="sample-id" name="sample_id" placeholder="जैसे: JBP-101 (जो आपने अपने सैंपल पर लिखा है)" required>
+            </div>
+            
+            <button type="submit" class="btn-submit">सबमिट करें</button>
+        </form>
+    </div>
+{% endblock %}

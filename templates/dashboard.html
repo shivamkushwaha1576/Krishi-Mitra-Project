@@ -1,68 +1,121 @@
-{% extends "layout.html" %} <!-- Step 1: Extend the layout -->
+<!-- layout.html से सब कुछ इनहेरिट करें -->
+{% extends 'layout.html' %}
 
-<!-- Step 2: Change title -->
-{% block title %}
-    Farmer Dashboard
-{% endblock %}
+<!-- पेज का टाइटल -->
+{% block title %}किसान डैशबोर्ड - कृषि मित्र{% endblock %}
 
-<!-- Step 3: Put all content inside this block -->
+<!-- पेज का मुख्य कंटेंट -->
 {% block content %}
-<main>
+<div class="page-container dashboard-container">
     
-    <!-- Welcome Message -->
-    <!-- 'current_user' is automatically provided by Flask-Login -->
-    <h2 style="text-align: left; border-bottom: none; margin-bottom: 30px;" class="animate-on-load">
-        Hello, {{ current_user.username }}!
-    </h2>
+    <!-- 1. स्वागत सन्देश -->
+    <div class="page-header">
+        <h1>नमस्ते, {{ current_user.fullname }}!</h1>
+        <p>यह आपका किसान डैशबोर्ड है। यहाँ आप अपनी खेती और यंत्रों को मैनेज कर सकते हैं।</p>
+        <p><strong>स्थान:</strong> {{ current_user.address }} | <strong>फ़ोन:</strong> {{ current_user.phone }}</p>
+    </div>
 
-    <!-- Dashboard Grid Layout -->
-    <div class="dashboard-grid">
+    <div class="dashboard-widgets">
 
-        <!-- 1. Form to change city -->
-        <section class="form-box animate-on-load">
-            <h3>My Weather Setting</h3>
-            <p style="margin-bottom: 20px;">Your currently saved city is: <br><strong>{{ current_user.city }}</strong></p>
+        <!-- === सेक्शन A: मिट्टी जाँच रिपोर्ट === -->
+        <div class="widget-card">
+            <h3><i class="fa-solid fa-flask"></i> मेरी मिट्टी जाँच रिपोर्ट्स</h3>
             
-            <form method="POST" action="/update_city">
-                <div class="form-group">
-                    <label for="city">Change Your City (In English):</label>
-                    <input type="text" id="city" name="city" placeholder="e.g. Mumbai, Pune" required>
-                </div>
-                <button type="submit" class="btn">Save City</button>
-            </form>
-        </section>
-
-        <!-- 2. User's Activity (Posts) -->
-        <section class="info-card animate-on-load">
-            <h3>My Activity</h3>
-            <p>Your recent questions posted to the community will appear here.</p>
-            
-            <!-- 
-            FUTURE FEATURE: We can loop through the user's posts
-            {% for post in current_user.posts | reverse %}
-                <div class="user-post-snippet">
-                    <p>"{{ post.content | truncate(80) }}"</p>
-                    <small>Posted on: {{ post.timestamp.strftime('%Y-%m-%d') }}</small>
-                </div>
+            {% if current_user.soil_samples %}
+                <table class="inventory-table">
+                    <thead>
+                        <tr>
+                            <th>सैंपल ID</th>
+                            <th>स्टेटस</th>
+                            <th>रिपोर्ट</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sample in current_user.soil_samples %}
+                        <tr>
+                            <td>{{ sample.sample_id }}</td>
+                            <td>
+                                {% if sample.status == 'Pending' %}
+                                    <span style="color: orange;">जाँच जारी है (Pending)</span>
+                                {% else %}
+                                    <span style="color: green;">पूरा हुआ (Completed)</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if sample.status == 'Completed' %}
+                                    <button class="btn-learn-more" style="padding: 5px 10px; font-size: 0.8rem;">रिपोर्ट देखें</button>
+                                {% else %}
+                                    ---
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             {% else %}
-                <p>You have not posted any questions yet.</p>
-            {% endfor %}
-            -->
-
-            {% if not current_user.posts %}
-                 <p>You have not posted any questions yet. <a href="{{ url_for('community') }}">Ask one!</a></p>
+                <p>आपने अभी तक कोई मिट्टी का सैंपल नहीं भेजा है। <a href="{{ url_for('soil_testing') }}">यहाँ क्लिक करके भेजें</a>.</p>
             {% endif %}
+        </div>
 
-            <!-- This will show the 5 most recent posts -->
-            {% for post in current_user.posts | reverse %}
-                 <p style="background: #f9f9f9; padding: 10px; border-radius: 5px; border-left: 3px solid #28a745;">
-                    <em>"{{ post.content | truncate(80) }}"</em>
-                 </p>
-            {% endfor %}
+        <!-- === सेक्शन B: यंत्र किराए पर दें (OLX फीचर) === -->
+        <div class="widget-card">
+            <h3><i class="fa-solid fa-tractor"></i> अपने यंत्र किराए पर दें</h3>
+            <p>अगर आपके पास ट्रैक्टर, थ्रेशर या कोई मशीन खाली है, तो उसे यहाँ जोड़ें और कमाई करें।</p>
+            
+            <!-- यंत्र जोड़ने का फ़ॉर्म -->
+            <form class="simple-form" action="{{ url_for('add_inventory') }}" method="POST" style="margin-top: 1rem; box-shadow: none; padding: 0; background: transparent;">
+                
+                <div class="form-group">
+                    <label>यंत्र का नाम (Item Name)</label>
+                    <input type="text" name="item_name" placeholder="जैसे: महिंद्रा ट्रैक्टर 575" required>
+                </div>
 
-        </section>
+                <div class="form-group">
+                    <label>विवरण (Details)</label>
+                    <input type="text" name="quantity" placeholder="जैसे: लाल रंग, अच्छी कंडीशन" required>
+                </div>
 
-    </div> <!-- .dashboard-grid ends -->
+                <div class="form-group">
+                    <label>किराया (Price per Hour/Day)</label>
+                    <input type="text" name="price" placeholder="जैसे: ₹800 प्रति घंटा" required>
+                </div>
 
-</main>
+                <button type="submit" class="btn-submit">यंत्र लिस्ट करें</button>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- === सेक्शन C: मेरे लिस्ट किए गए यंत्र === -->
+    {% if current_user.inventory_items %}
+    <div class="widget-card" style="margin-top: 2rem;">
+        <h3><i class="fa-solid fa-list"></i> मेरे लिस्ट किए गए यंत्र (My Listed Equipment)</h3>
+        <table class="inventory-table">
+            <thead>
+                <tr>
+                    <th>यंत्र का नाम</th>
+                    <th>विवरण</th>
+                    <th>किराया (Price)</th>
+                    <th>एक्शन</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in current_user.inventory_items %}
+                <tr>
+                    <td><strong>{{ item.item_name }}</strong></td>
+                    <td>{{ item.quantity }}</td>
+                    <td style="color: var(--primary-color); font-weight: bold;">{{ item.price }}</td>
+                    <td>
+                        <form action="{{ url_for('delete_inventory', item_id=item.id) }}" method="POST" style="display:inline;">
+                            <button type="submit" class="btn-delete"><i class="fa-solid fa-trash"></i> हटाएं</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+</div>
 {% endblock %}

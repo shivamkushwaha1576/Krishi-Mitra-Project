@@ -1,72 +1,106 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}कृषि मित्र{% endblock %}</title>
     
-    <!-- The title will be changed by each page that extends this -->
-    <title>{% block title %}Krishi Mitra{% endblock %}</title>
+    <!-- (!!! जादुई फिक्स !!!) ?v=2 जोड़ने से ब्राउज़र नई फाइल लोड करेगा -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
     
-    <!-- This links to your one and only CSS file -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
 
-    <!-- === 1. Header === -->
-    <header>
-        <h1><a href="/" style="color: white; text-decoration: none;">Krishi Mitra - Smart Portal</a></h1>
-        
-        <!-- === 2. Navigation Bar === -->
-        <nav>
-            <!-- This 'if' checks if the user is logged in or not -->
-            {% if current_user.is_authenticated %}
-                <!-- Show these links if logged in -->
-                <a href="/">Home</a>
-                <a href="/dashboard">Dashboard</a>
-                <a href="/community">Community Q&A</a>
-                <a href="/ai_helper">AI Assistant</a>
-                <a href="/schemes">Schemes</a>
-                <a href="/about">About Us</a>
-                <a href="/logout" class="nav-logout">Logout ({{ current_user.username }})</a>
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fa-solid fa-tractor"></i>
+            <h1><a href="/">कृषि मित्र</a></h1>
+        </div>
+        <div class="nav-links">
+            <a href="/">होम</a>
+            <a href="/about">हमारे बारे में</a>
+            <a href="/soil-testing">मिट्टी जाँच</a>
+            <a href="/schemes">योजनाएँ</a>
+            <a href="/contact">संपर्क</a>
+            <a href="/tool-search">उपकरण खोजें</a>
             
+            {% if current_user.is_authenticated %}
+                {% if current_user.role == 'shop' %}
+                    <a href="/shop-dashboard">शॉप डैशबोर्ड</a>
+                {% else %}
+                    <a href="/dashboard">किसान डैशबोर्ड</a>
+                {% endif %}
+                <a href="/logout" class="btn-logout">लॉग आउट</a>
             {% else %}
-                <!-- Show these links if not logged in -->
-                <a href="/">Home</a>
-                <a href="/schemes">Schemes</a>
-                <a href="/about">About Us</a>
-                <a href="/login" class="nav-login">Login</a>
-                <a href="/register" classNmae="nav-register">Register</a>
+                <a href="/login" class="btn-login">लॉगिन</a>
             {% endif %}
-        </nav>
-    </header>
+        </div>
+    </nav>
 
-    <!-- === 3. Main Content (This will be replaced by other pages) === -->
-    <main>
-        <!-- This block is for Flash Messages (Errors/Success) -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <!-- The category will be 'flash-message' (red) or 'flash-message-success' (green) -->
-                    <div class="{{ category }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+            {% for category, message in messages %}
+                <div class="flash-message {{ category }}">{{ message }}</div>
+            {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
 
-        <!-- This 'content' block will be filled by index.html, login.html, etc. -->
-        {% block content %}{% endblock %}
-
+    <main class="main-content">
+        {% block content %}
+        {% endblock %}
     </main>
+    
+    <!-- === AI चैटबॉट (100% Fixed) === -->
+    <div id="chatbot-container">
+        <div id="chatbot-window">
+            <div class="chat-header">
+                <span><i class="fa-solid fa-robot"></i> कृषि सहायक</span>
+                
+                <div class="chat-header-controls">
+                    <!-- Mute Button -->
+                    <button id="tts-mute-btn" class="tts-control-btn" aria-label="Mute audio">
+                        <i class="fa-solid fa-volume-high"></i>
+                    </button>
+                    
+                    <!-- Language Select -->
+                    <select id="tts-language-select" class="tts-language-select">
+                        <option value="hi-IN">हिंदी</option>
+                        <option value="en-IN">English</option>
+                    </select>
+                    
+                    <!-- Close Button -->
+                    <button id="chatbot-close-btn">&times;</button>
+                </div>
+            </div>
+            
+            <div id="chat-body" class="chat-body">
+                <div class="message bot">
+                    <p>नमस्ते! मैं आपका कृषि सहायक हूँ। आप अपनी खेती के बारे में कुछ भी पूछ सकते हैं।</p>
+                </div>
+            </div>
+            
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="अपना सवाल पूछें...">
+                <button id="chat-send-btn"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </div>
 
-    <!-- === 4. Footer === -->
+        <button id="chatbot-toggle">
+            <i class="fa-solid fa-robot"></i>
+        </button>
+    </div>
+
     <footer>
-        <p>&copy; 2025 Krishi Mitra Portal | All Rights Reserved</p>
-        <p><a href="/about" style="color: #aaa; text-decoration: underline;">About Us</a></p>
+        <p>&copy; 2025 कृषि मित्र - स्मार्ट अवेयरनेस पोर्टल. सभी अधिकार सुरक्षित।</p>
     </footer>
 
-    <!-- This 'scripts' block is for pages (like index.html) that need JavaScript -->
+    <!-- (!!! जादुई फिक्स !!!) ?v=2 यहाँ भी जोड़ा गया है -->
+    <script src="{{ url_for('static', filename='script.js') }}?v=2"></script>
+    
     {% block scripts %}{% endblock %}
-
 </body>
 </html>

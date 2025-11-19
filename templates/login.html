@@ -1,49 +1,37 @@
-{% extends "layout.html" %} <!-- Step 1: Extend the layout -->
+{% extends 'layout.html' %}
 
-<!-- Step 2: Change title -->
-{% block title %}
-    Farmer Login
-{% endblock %}
+{% block title %}लॉगिन - कृषि मित्र{% endblock %}
 
-<!-- Step 3: Put all content inside this block -->
 {% block content %}
-<main>
-    <!-- This is the 2-column layout container (from screenshot 10) -->
-    <div class="login-container animate-on-load">
-
-        <!-- 1. Left Side (Illustration) -->
-        <div class="login-illustration">
-            <!-- Using a placeholder image -->
-            <img src="https://placehold.co/400x400/e6f4ea/28a745?text=Krishi\nMitra\nPortal" 
-                 alt="Krishi Mitra Portal Illustration"
-                 onerror="this.src='https://placehold.co/400x400?text=Illustration'">
-        </div>
-
-        <!-- 2. Right Side (Login Form) -->
-        <div class="login-form-box-wrapper">
+<div class="login-container">
+    <div class="login-box">
+        <h2>पोर्टल में लॉगिन करें</h2>
+        <p>Shoppy, Admin, या User के रूप में लॉगिन करें।</p>
+        
+        <form class="login-form" action="{{ url_for('login') }}" method="POST">
             
-            <h2>Farmer Login</h2>
-            <p style="margin-bottom: 25px; color: #555;">Enter your username and password to log in to the portal.</p>
-
-            <!-- Flash messages (Errors) will be shown here (they are inside the <main> block in layout.html) -->
-
-            <!-- The login form -->
-            <form method="POST" action="/login">
-                <div class="form-group">
-                    <label for="username">Username:</label>
-                    <input type="text" id="username" name="username" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" required>
-                </div>
-                <button type="submit" class="btn">Login</button>
-            </form>
-            <p style="text-align: center; margin-top: 20px;">
-                Don't have an account? <a href="/register">Register here</a>
-            </p>
+            <div class="form-group">
+                <label for="email">ईमेल (Email)</label>
+                <!-- 'for' एट्रिब्यूट और 'id' सेम होने चाहिए -->
+                <input type="email" id="email" name="email" placeholder="अपना ईमेल लिखें..." required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">पासवर्ड (Password)</label>
+                <input type="password" id="password" name="password" placeholder="अपना पासवर्ड लिखें..." required>
+            </div>
+            
+            <button type="submit" class="btn-submit">लॉगिन करें</button>
+        </form>
+        
+        <div class="login-footer">
+            <p>क्या आपका अकाउंट नहीं है?</p>
+            <!-- लिंक्स को साफ़ दिखाने के लिए एक के नीचे एक रखा है -->
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
+                <a href="{{ url_for('register') }}">👉 किसान के रूप में रजिस्टर करें</a>
+                <a href="{{ url_for('register_shop') }}">👉 शॉप (दुकान) के रूप में रजिस्टर करें</a>
+            </div>
         </div>
-
     </div>
-</main>
+</div>
 {% endblock %}

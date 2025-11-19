@@ -1,0 +1,90 @@
+<!-- layout.html से सब कुछ इनहेरिट करें -->
+{% extends 'layout.html' %}
+
+{% block title %}उपकरण खोजें - कृषि मित्र{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    
+    <div class="page-header">
+        <h1>नजदीकी दुकानें और यंत्र खोजें</h1>
+        <p>बीज, खाद खरीदें या साथी किसानों से ट्रैक्टर/यंत्र किराए पर लें।</p>
+    </div>
+
+    <!-- 1. सर्च फ़िल्टर -->
+    <form class="search-filters" method="POST" action="{{ url_for('tool_search') }}">
+        <input type="text" class="search-bar" name="search_query" 
+               placeholder="क्या खोज रहे हैं? (जैसे: यूरिया, ट्रैक्टर...)" 
+               value="{{ search_term }}">
+        
+        <input type="text" class="location-bar" name="location" 
+               placeholder="शहर/गाँव (जैसे: Jabalpur)" 
+               value="{{ location_term }}">
+        
+        <button type="submit" class="btn-submit">खोजें</button>
+    </form>
+
+    <!-- 2. खोज परिणाम -->
+    <div class="search-results">
+        
+        {% if results %}
+            <h2>खोज परिणाम ({{ results|length }} मिले)</h2>
+            
+            <div class="results-grid">
+                {% for item in results %}
+                <div class="result-card">
+                    
+                    <!-- (A) बैज: यह दुकान है या किसान? -->
+                    {% if item.shop_owner.role == 'farmer' %}
+                        <div class="card-badge rent-badge">
+                            <i class="fa-solid fa-tractor"></i> किराए पर (Rent)
+                        </div>
+                    {% else %}
+                        <div class="card-badge shop-badge">
+                            <i class="fa-solid fa-store"></i> दुकान (Shop)
+                        </div>
+                    {% endif %}
+
+                    <!-- (B) इमेज -->
+                    <img src="https://placehold.co/600x400/2a9d8f/ffffff?text={{ item.item_name | urlencode }}" alt="{{ item.item_name }}">
+                    
+                    <div class="card-content">
+                        <!-- (C) नाम और विवरण -->
+                        <h3 class="item-name">{{ item.item_name }}</h3>
+                        <p class="item-quantity">{{ item.quantity }}</p>
+                        
+                        <!-- (D) किराया (Price) - अगर उपलब्ध हो -->
+                        {% if item.price %}
+                            <p class="price-tag">
+                                <i class="fa-solid fa-tag"></i> {{ item.price }}
+                            </p>
+                        {% endif %}
+
+                        <!-- (E) मालिक की जानकारी और कॉल बटन -->
+                        <div class="shop-details">
+                            <p class="owner-name">
+                                <i class="fa-solid fa-user"></i> 
+                                {{ item.shop_owner.fullname }} 
+                                ({{ item.shop_owner.address }})
+                            </p>
+                            
+                            <!-- Call Now Button -->
+                            <a href="tel:{{ item.shop_owner.phone }}" class="btn-call">
+                                <i class="fa-solid fa-phone"></i> अभी कॉल करें
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+        {% elif search_term or location_term %}
+            <p class="no-results">कोई परिणाम नहीं मिला। कृपया कुछ और सर्च करें।</p>
+        {% else %}
+            <p class="no-results">ऊपर यंत्र का नाम या शहर का नाम डालकर सर्च करें।</p>
+        {% endif %}
+        
+    </div>
+
+</div>
+{% endblock %}

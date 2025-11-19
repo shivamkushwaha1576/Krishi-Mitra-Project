@@ -1,0 +1,927 @@
+/* === KRISHI MITRA - MODERN THEME 2025 === */
+
+/* 1. फोंट्स इम्पोर्ट करें */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Open+Sans:wght@400;600&display=swap');
+
+/* 2. कलर वेरिएबल्स (Modern Earthy Palette) */
+:root {
+    --primary: #2E7D32;       /* गहरा जंगल हरा */
+    --primary-light: #4CAF50; /* हल्का हरा */
+    --accent: #FF6D00;        /* सुरक्षा नारंगी (Buttons के लिए) */
+    --bg-body: #F1F8E9;       /* बहुत हल्का हरा बैकग्राउंड */
+    --bg-card: #FFFFFF;       /* शुद्ध सफेद */
+    --text-main: #1B5E20;     /* गहरा हरा टेक्स्ट */
+    --text-body: #546E7A;     /* ग्रे-ब्लू टेक्स्ट */
+    --shadow-sm: 0 4px 6px rgba(0,0,0,0.05);
+    --shadow-md: 0 10px 20px rgba(46, 125, 50, 0.15); /* हरे रंग की हल्की परछाई */
+    --radius: 16px;           /* गोल कोने */
+}
+
+/* 3. ग्लोबल स्टाइल्स */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: var(--bg-body);
+    color: var(--text-body);
+    line-height: 1.6;
+    padding-bottom: 100px; /* चैटबॉट के लिए जगह */
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+    color: var(--text-main);
+    font-weight: 700;
+}
+
+a { text-decoration: none; transition: 0.3s; }
+
+/* --- 4. मॉडर्न नेविगेशन बार --- */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.95); /* थोड़ा पारदर्शी */
+    backdrop-filter: blur(10px);
+    padding: 1rem 5%;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: var(--shadow-sm);
+    border-bottom: 1px solid #E8F5E9;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.logo i { font-size: 2rem; color: var(--accent); }
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.nav-links a {
+    color: var(--text-main);
+    font-weight: 600;
+    font-size: 0.95rem;
+    position: relative;
+}
+
+.nav-links a:not(.btn-login):not(.btn-logout)::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -5px;
+    left: 0;
+    background-color: var(--accent);
+    transition: width 0.3s;
+}
+
+.nav-links a:not(.btn-login):not(.btn-logout):hover::after {
+    width: 100%;
+}
+
+/* बटन्स */
+.btn-login, .btn-logout, .btn-submit, .btn-learn-more {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white !important;
+    padding: 0.7rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+}
+
+.btn-logout { background: linear-gradient(135deg, #FF5252, #FF1744); }
+
+.btn-login:hover, .btn-submit:hover, .btn-learn-more:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(46, 125, 50, 0.4);
+}
+
+/* --- 5. हीरो सेक्शन (Hero Section) --- */
+.hero {
+    text-align: center;
+    padding: 5rem 1rem;
+    background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
+    color: white;
+    border-radius: 0 0 50px 50px; /* नीचे से गोल */
+    margin-bottom: 3rem;
+    box-shadow: var(--shadow-md);
+}
+
+.hero h2 { 
+    color: white; 
+    font-size: 3rem; 
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.hero p { 
+    color: #E8F5E9; 
+    font-size: 1.3rem; 
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* --- 6. मॉडर्न कार्ड ग्रिड (Feature Grid) --- */
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    padding: 0 5%;
+    max-width: 1400px;
+    margin: -3rem auto 4rem auto; /* हीरो सेक्शन के ऊपर थोड़ा चढ़ाना */
+    position: relative;
+    z-index: 10;
+}
+
+.feature-card {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    box-shadow: var(--shadow-md);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy effect */
+    border: 1px solid #F1F8E9;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.feature-card:hover {
+    transform: translateY(-15px);
+    border-color: var(--primary-light);
+}
+
+.feature-card i {
+    font-size: 2.5rem;
+    color: var(--primary);
+    background: #E8F5E9;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    margin-bottom: 1.5rem;
+    transition: 0.3s;
+}
+
+.feature-card:hover i {
+    background: var(--primary);
+    color: white;
+    transform: rotateY(180deg);
+}
+
+.feature-card h3 { font-size: 1.4rem; margin-bottom: 0.5rem; }
+.feature-card p { font-size: 0.95rem; color: var(--text-body); }
+
+/* --- 7. अन्य पेजों के लिए कंटेनर --- */
+.page-container {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 2.5rem;
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+}
+
+/* --- 8. फॉर्म्स (Forms) --- */
+.form-group input, .form-group select, .form-group textarea {
+    border: 2px solid #E0E0E0;
+    border-radius: 12px;
+    padding: 1rem;
+    font-family: 'Open Sans', sans-serif;
+    transition: 0.3s;
+}
+
+.form-group input:focus, .form-group select:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.1);
+}
+
+/* --- 9. AI चैटबॉट (Floating) --- */
+/* --- 16. AI चैटबॉट (AI Chatbot) - FIXED STYLES --- */
+
+/* कंटेनर को फिक्स करें */
+#chatbot-container {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 9999; /* सबसे ऊपर */
+}
+
+/* टॉगल बटन (ओपन करने वाला) */
+#chatbot-toggle {
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 1.8rem;
+    border: none;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(14, 92, 3, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s;
+}
+#chatbot-toggle:hover {
+    transform: scale(1.1);
+}
+
+/* चैट विंडो (असली बॉक्स) */
+#chatbot-window {
+    position: absolute;
+    bottom: 80px; /* बटन के थोड़ा ऊपर */
+    right: 0;
+    width: 350px;
+    height: 480px;
+    background-color: #1b087c; /* सफेद बैकग्राउंड */
+    border-radius: 15px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    
+    /* एनिमेशन */
+    transform: scale(0);
+    transform-origin: bottom right;
+    transition: transform 0.3s ease-out;
+    border: 1px solid #350404;
+}
+
+/* जब चैटबॉट खुला हो */
+#chatbot-window.open {
+    transform: scale(1);
+}
+
+/* चैट हेडर (ऊपर वाला हिस्सा) */
+.chat-header {
+    background-color: var(--secondary-color);
+    color: rgb(141, 197, 30);
+    padding: 12px 15px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* टाइटल और बटन को अलग करें */
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+/* हेडर के अंदर के कंट्रोल्स (म्यूट, लैंग्वेज, क्लोज) */
+.chat-header-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* लैंग्वेज ड्रॉपडाउन */
+.tts-language-select {
+    background-color: rgba(255,255,255,0.2);
+    color: rgb(29, 113, 151);
+    border: 1px solid rgba(69, 14, 14, 0.5);
+    border-radius: 4px;
+    padding: 2px 5px;
+    font-size: 0.8rem;
+    outline: none;
+}
+.tts-language-select option {
+    color: black; /* ऑप्शन का टेक्स्ट काला हो */
+}
+
+/* म्यूट और क्लोज बटन */
+.tts-control-btn,
+#chatbot-close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0 5px;
+}
+.tts-control-btn:hover,
+#chatbot-close-btn:hover {
+    color: #ddd;
+}
+
+/* चैट बॉडी (मैसेज वाला हिस्सा) */
+.chat-body {
+    flex-grow: 1; /* बची हुई जगह ले ले */
+    padding: 15px;
+    overflow-y: auto; /* स्क्रॉल बार आए */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: #f5f5f5; /* हल्का ग्रे बैकग्राउंड */
+}
+
+/* मैसेज बबल */
+.message {
+    padding: 10px 15px;
+    border-radius: 10px;
+    max-width: 80%;
+    line-height: 1.4;
+    font-size: 0.95rem;
+    word-wrap: break-word;
+}
+
+/* बॉट का मैसेज (बाएँ) */
+.message.bot {
+    background-color: #ffffff;
+    color: #333;
+    border: 1px solid #ddd;
+    align-self: flex-start;
+    border-bottom-left-radius: 2px;
+}
+
+/* यूज़र का मैसेज (दाएँ) */
+.message.user {
+    background-color: var(--primary-color);
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 2px;
+}
+
+/* इनपुट एरिया (नीचे वाला हिस्सा) */
+.chat-input-area {
+    display: flex;
+    border-top: 1px solid #ddd;
+    background: #fff;
+    padding: 5px;
+}
+
+.chat-input-area input {
+    flex-grow: 1;
+    border: none;
+    padding: 12px;
+    font-size: 1rem;
+    outline: none;
+}
+
+.chat-input-area button {
+    border: none;
+    background: transparent;
+    color: var(--primary-color);
+    padding: 0 15px;
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.chat-input-area button:hover {
+    color: var(--secondary-color);
+}
+
+/* --- 10. मोबाइल रिस्पॉन्सिव --- */
+@media (max-width: 768px) {
+    .hero h2 { font-size: 2rem; }
+    .feature-grid { margin-top: 2rem; }
+    .nav-links { display: none; } /* मोबाइल मेनू बाद में जोड़ा जा सकता है */
+    .navbar { flex-direction: column; gap: 1rem; }
+    .nav-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+}
+
+/* --- 11. लोडिंग स्पिनर --- */
+.spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid var(--accent);
+}
+
+/* --- 12. Flash Messages --- */
+.flash-message {
+    border-radius: 12px;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}em;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr auto;
+    gap: 1rem;
+}
+.search-filters input,
+.search-filters select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+@media (max-width: 992px) {
+    .search-filters {
+        grid-template-columns: 1fr;
+    }
+}
+.search-results { margin-top: 2rem; }
+.search-results h2 {
+    color: var(--secondary-color);
+    margin-bottom: 1.5rem;
+}
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+/* (शॉप) इन्वेंटरी (Inventory) सर्च रिज़ल्ट (Result) कार्ड */
+.result-card {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+.result-card:hover { transform: translateY(-5px); }
+.result-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+}
+.result-card .card-content {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+.result-card .item-name {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.4rem;
+    color: var(--primary-color);
+}
+.result-card .item-quantity {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 1rem;
+}
+.result-card .shop-details {
+    border-top: 1px solid #eee;
+    padding-top: 1rem;
+    margin-top: auto; /* (दुकान की जानकारी को नीचे रखें) */
+}
+.result-card .shop-details h4 {
+    margin: 0 0 0.5rem 0;
+    color: var(--secondary-color);
+}
+.result-card .location {
+    font-size: 0.95rem;
+    color: #333;
+    font-weight: 500;
+    margin-bottom: 0.8rem;
+}
+.result-card .location i {
+    margin-right: 5px;
+    color: var(--primary-color);
+}
+.result-card .btn-learn-more {
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+
+/* --- 15. फ़्लैश (Flash) मैसेज (Messages) --- */
+.flash-messages {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+.flash-message {
+    padding: 1rem 1.5rem;
+    margin: 1rem 2rem;
+    border-radius: 8px;
+    font-weight: 500;
+    text-align: center;
+}
+.flash-message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+.flash-message.danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+.flash-message.warning,
+.flash-message.info { /* (Info को Warning जैसा दिखाएँ) */
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
+
+
+/* --- 16. AI चैटबॉट (AI Chatbot) (लेटेस्ट) --- */
+#chatbot-container {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 1001;
+}
+#chatbot-toggle {
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 1.8rem;
+    border: none;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s;
+}
+#chatbot-toggle:hover {
+    transform: scale(1.1);
+}
+#chatbot-window {
+    position: absolute;
+    bottom: 80px;
+    right: 0;
+    width: 340px;
+    height: 450px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: scale(0);
+    transform-origin: bottom right;
+    transition: transform 0.3s ease-out;
+}
+#chatbot-window.open {
+    transform: scale(1);
+}
+.chat-header {
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 0.8rem 1rem; /* (पैडिंग (Padding) थोड़ी कम) */
+    font-weight: bold;
+    text-align: left; 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; /* (नया) */
+    gap: 10px; 
+}
+.chat-header span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.chat-body {
+    flex-grow: 1;
+    padding: 1rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    background-color: #f9f9f9; /* (नया) */
+}
+.message {
+    padding: 0.8rem 1rem;
+    border-radius: 10px;
+    max-width: 85%;
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+.message.bot {
+    background-color: #e9ecef; /* (नया रंग) */
+    color: #333;
+    border-radius: 0 10px 10px 10px;
+    align-self: flex-start;
+}
+.message.user {
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 10px 0 10px 10px;
+    align-self: flex-end;
+}
+.chat-input-area {
+    display: flex;
+    border-top: 1px solid #ddd;
+    background: #fff;
+}
+.chat-input-area input {
+    flex-grow: 1;
+    border: none;
+    padding: 1rem;
+    font-size: 1rem;
+}
+.chat-input-area input:focus {
+    outline: none;
+}
+.chat-input-area button {
+    border: none;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0 1.2rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.chat-input-area button:hover {
+    background-color: var(--secondary-color);
+}
+/* (3-डॉट (dot) लोडिंग (loading) एनीमेशन (animation)) */
+.message.loading-indicator span {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background-color: #999;
+    border-radius: 50%;
+    animation: bounce 1.4s infinite both;
+}
+.message.loading-indicator span:nth-child(1) { animation-delay: -0.32s; }
+.message.loading-indicator span:nth-child(2) { animation-delay: -0.16s; }
+@keyframes bounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1.0); }
+}
+
+/* (!!! 100% FIX !!!) --- 17. AI चैटबॉट (Chatbot) वॉयस (Voice) कंट्रोल (Control) --- */
+.chat-header-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.tts-language-select {
+    background-color: var(--secondary-color);
+    color: white;
+    border: 1px solid var(--primary-color);
+    border-radius: 4px;
+    padding: 0.2rem 0.3rem;
+    font-size: 0.8rem;
+}
+/* (!!! 100% FIX !!!) - (Mute (म्यूट) aur Close (क्लोज़) buttons (बटनों) ke liye) */
+.tts-control-btn,
+#chatbot-close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2rem; /* (Icon (आइकन) ka size (साइज़)) */
+    cursor: pointer;
+    padding: 0 5px;
+    line-height: 1; /* (Vertical alignment (वर्टिकल अलाइनमेंट) ke liye) */
+    transition: color 0.2s;
+}
+#chatbot-close-btn {
+    font-size: 1.5rem; /* (X ko thoda bada (larger) rakhen) */
+}
+.tts-control-btn:hover,
+#chatbot-close-btn:hover {
+    color: var(--primary-color); /* (Hover (होवर) effect (इफ़ेक्ट)) */
+}
+
+
+/* --- 18. लोडिंग (Loading) स्पिनर (Spinner) (Weather, Market) --- */
+.spinner {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid var(--primary-color);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem auto;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+#loading-indicator-market,
+#loading-indicator-weather {
+    text-align: center;
+    padding: 2rem;
+    color: var(--secondary-color);
+}
+#error-message {
+    text-align: center;
+    padding: 1.5rem;
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+}
+
+
+/* --- 19. फसल रोग (Plant Disease) पेज --- */
+.plant-disease-container .page-header {
+    margin-bottom: 1rem;
+}
+/* (यह 'फ़ॉर्म' (Form) और 'रिज़ल्ट' (Result) को अगल-बगल (side-by-side) रखता है) */
+.plant-disease-form, .diagnosis-result-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+@media (max-width: 992px) {
+    .plant-disease-form, .diagnosis-result-box {
+        grid-template-columns: 1fr;
+    }
+}
+/* (अपलोड (Upload) एरिया (Area)) */
+.upload-area {
+    background-color: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+.image-preview-box {
+    width: 100%;
+    height: 300px;
+    border: 2px dashed #ddd;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column; /* (नया) */
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background-color: #f9f9f9;
+    margin-bottom: 1rem;
+    position: relative;
+    cursor: pointer;
+}
+.image-preview-img {
+    display: none;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.image-preview-text {
+    color: #999;
+    font-weight: 500;
+    text-align: center;
+}
+.image-preview-text i {
+    font-size: 3rem;
+    color: #ccc;
+    margin-bottom: 1rem;
+}
+.file-name-display {
+    font-size: 0.9rem;
+    color: #555;
+    text-align: center;
+    margin-top: 1rem;
+    font-style: italic;
+}
+.analyze-button {
+    width: 100%;
+    margin-top: 1rem;
+    font-size: 1.2rem;
+    padding: 1rem;
+}
+.analyze-button:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+}
+.analyze-button i { margin-right: 8px; }
+/* (रिज़ल्ट (Result) और लोडिंग (Loading) एरिया (Area)) */
+.submit-area {
+    /* (यह लोडिंग (Loading) को बटन (Button) की जगह पर रखता है) */
+    position: relative;
+}
+.loading-spinner {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: var(--secondary-color);
+    text-align: center;
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+.diagnosis-result-box {
+    background-color: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+.diagnosis-result-box h3 {
+    font-size: 1.8rem;
+    color: var(--secondary-color);
+    margin: 0 0 1rem 0;
+}
+.result-container {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 1.5rem;
+}
+@media (max-width: 768px) {
+    .result-container {
+        grid-template-columns: 1fr;
+    }
+}
+.result-image p {
+    font-weight: bold;
+    color: #333;
+    margin: 0 0 0.5rem 0;
+}
+.result-image img {
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+.result-text {
+    font-size: 1.1rem;
+    line-height: 1.7;
+}
+.result-text p { margin: 0 0 1rem 0; }
+.result-text p strong {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    display: block;
+}
+.ai-diagnosis-text {
+    white-space: pre-wrap; /* ('nl2br' फिक्स (Fix)) */
+    word-wrap: break-word;
+    font-size: 1rem;
+    color: #333;
+}
+/* --- 25. OLX / Rental Features Styling --- */
+
+/* बैज के रंग */
+.shop-badge {
+    background-color: var(--primary-color); /* हरा (दुकान के लिए) */
+}
+.rent-badge {
+    background-color: #e76f51; /* नारंगी (किराए के लिए) */
+}
+
+/* किराया टैग */
+.price-tag {
+    font-size: 1.2rem;
+    color: #264653;
+    font-weight: bold;
+    background-color: #fff3cd;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-block;
+    margin-bottom: 10px;
+    border: 1px solid #ffeeba;
+}
+
+/* मालिक का नाम */
+.owner-name {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+/* कॉल बटन */
+.btn-call {
+    display: block;
+    width: 100%;
+    background-color: #28a745; /* कॉल के लिए हरा */
+    color: white;
+    text-align: center;
+    padding: 0.8rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: background-color 0.2s;
+    box-sizing: border-box;
+}
+.btn-call:hover {
+    background-color: #218838;
+}
+.btn-call i {
+    margin-right: 8px;
+}
+
+.no-results {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #777;
+    margin-top: 2rem;
+}

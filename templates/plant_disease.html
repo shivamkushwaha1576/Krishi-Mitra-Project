@@ -1,0 +1,150 @@
+<!-- layout.html से सब कुछ इनहेरिट करें -->
+{% extends 'layout.html' %}
+
+<!-- पेज का टाइटल सेट करें -->
+{% block title %}फसल रोग की पहचान - कृषि मित्र{% endblock %}
+
+<!-- पेज का मुख्य कंटेंट -->
+{% block content %}
+<div class="page-container plant-disease-container">
+    
+    <!-- पेज हेडर -->
+    <div class="page-header">
+        <h1>AI से फसल रोग की पहचान करें</h1>
+        <p>अपने बीमार पौधे की पत्ती (leaf) की एक साफ़ तस्वीर (photo) अपलोड करें।</p>
+    </div>
+
+    <!-- (!!! यह नया फ़ॉर्म है !!!) -->
+    <div class="diagnosis-ui">
+        
+        <!-- 1. अपलोड फ़ॉर्म -->
+        <div class="upload-container widget-card">
+            <form method="POST" enctype="multipart/form-data" id="plant-disease-form">
+                
+                <!-- (नया) इमेज प्रीव्यू बॉक्स -->
+                <div class="image-preview-box" id="image-preview-box">
+                    <img src="" alt="Image Preview" class="image-preview-img" id="image-preview-img">
+                    <span class="image-preview-text" id="image-preview-text">तस्वीर (photo) यहाँ दिखेगी</span>
+                </div>
+                
+                <!-- (नया) फ़ाइल चुनने का बटन (इसे स्टाइल किया गया है) -->
+                <label for="leaf-image-upload" class="btn-submit upload-label">
+                    <i class="fa-solid fa-camera"></i> तस्वीर (photo) चुनें
+                </label>
+                <input type="file" name="leaf-image" id="leaf-image-upload" accept="image/png, image/jpeg" required>
+                
+                <p id="file-name" class="file-name-display"></p>
+                
+                <!-- (नया) सबमिट बटन -->
+                <button type="submit" class="btn-submit analyze-button" id="analyze-button" disabled>
+                    <i class="fa-solid fa-magic-wand-sparkles"></i> जाँच करें (Analyze)
+                </button>
+            </form>
+        </div>
+        
+        <!-- 2. लोडिंग (Loading) और रिज़ल्ट (Result) -->
+        <div class="result-container">
+            
+            <!-- (नया) लोडिंग स्पिनर (शुरू में छिपा हुआ) -->
+            <div class="widget-card loading-spinner" id="loading-spinner" style="display: none;">
+                <div class="spinner"></div>
+                <p>AI आपकी तस्वीर (photo) की जाँच कर रहा है... इसमें 10-15 सेकंड लग सकते हैं।</p>
+            </div>
+
+            <!-- (नया) AI का रिज़ल्ट (Result) दिखाने का बॉक्स -->
+            <!-- (app.py से diagnosis_result मिलने पर यह दिखेगा) -->
+            {% if diagnosis_result %}
+            <div class="widget-card diagnosis-result-box">
+                <h3>AI जाँच का परिणाम:</h3>
+                
+                <!-- (नया) किसान (Farmer) द्वारा अपलोड की गई तस्वीर (image) -->
+                {% if uploaded_image_b64 %}
+                    <div class="result-image">
+                        <p><strong>आपकी तस्वीर (Your Image):</strong></p>
+                        <img src="data:image/jpeg;base64,{{ uploaded_image_b64 }}" alt="Uploaded Leaf">
+                    </div>
+                {% endif %}
+
+                <!-- (नया) AI का जवाब (diagnosis) -->
+                <div class="result-text">
+                    <p><strong>AI का जवाब (Diagnosis):</strong></p>
+                    <!-- 
+                        (!!! फिक्स !!!) - 'nl2br' हटा दिया गया, 
+                        और एक नई class="ai-diagnosis-text" जोड़ी गई
+                    -->
+                    <p class="ai-diagnosis-text">{{ diagnosis_result | safe }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+        </div> <!-- .result-container -->
+
+    </div> <!-- .diagnosis-ui -->
+
+</div> <!-- .page-container -->
+
+
+<!-- (!!! सबसे ज़रूरी: JavaScript !!!) -->
+<!-- (यह JavaScript सिर्फ़ इसी पेज पर काम करेगा) -->
+<script>
+    // यह पक्का करें कि DOM (पेज) लोड हो गया है
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        // --- ज़रूरी चीज़ों को ढूँढें ---
+        const imageUpload = document.getElementById('leaf-image-upload');
+        const imagePreviewBox = document.getElementById('image-preview-box');
+        const imagePreviewImg = document.getElementById('image-preview-img');
+        const imagePreviewText = document.getElementById('image-preview-text');
+        const fileNameDisplay = document.getElementById('file-name');
+        const analyzeButton = document.getElementById('analyze-button');
+        const plantForm = document.getElementById('plant-disease-form');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        
+        // --- 1. जब किसान (Farmer) फ़ाइल चुने ---
+        imageUpload.addEventListener('change', () => {
+            const file = imageUpload.files[0];
+            
+            if (file) {
+                // 1. फ़ाइल का नाम दिखाएँ
+                fileNameDisplay.textContent = file.name;
+                
+                // 2. फ़ाइल का प्रीव्यू (preview) दिखाएँ
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreviewImg.src = e.target.result;
+                    imagePreviewImg.style.display = 'block';
+                    imagePreviewText.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+                
+                // 3. "जाँच करें" (Analyze) बटन को इनेबल (Enable) करें
+                analyzeButton.disabled = false;
+                
+            } else {
+                // अगर फ़ाइल न हो
+                fileNameDisplay.textContent = '';
+                imagePreviewImg.src = '';
+                imagePreviewImg.style.display = 'none';
+                imagePreviewText.style.display = 'block';
+                analyzeButton.disabled = true;
+            }
+        });
+
+        // --- 2. जब किसान (Farmer) "जाँच करें" (Analyze) बटन दबाए ---
+        plantForm.addEventListener('submit', () => {
+            // (यह JavaScript सिर्फ़ लोडिंग (Loading) स्पिनर दिखाएगा)
+            // (असली AI कॉल app.py द्वारा की जाएगी, जब पेज रीलोड होगा)
+            
+            // 1. बटन को डिसेबल (Disable) करें
+            analyzeButton.disabled = true;
+            analyzeButton.innerHTML = '<i class="fa-solid fa-hourglass-half"></i> जाँच हो रही है...';
+            
+            // 2. लोडिंग (Loading) स्पिनर दिखाएँ
+            if (loadingSpinner) {
+                loadingSpinner.style.display = 'flex';
+            }
+        });
+
+    });
+</script>
+{% endblock %}

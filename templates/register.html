@@ -1,36 +1,59 @@
-{% extends "layout.html" %} <!-- Step 1: Extend the layout -->
+<!-- layout.html से सब कुछ इनहेरिट करें -->
+{% extends 'layout.html' %}
 
-<!-- Step 2: Change title -->
-{% block title %}
-    Create an Account
-{% endblock %}
+<!-- पेज का टाइटल सेट करें -->
+{% block title %}रजिस्टर - कृषि मित्र{% endblock %}
 
-<!-- Step 3: Put all content inside this block -->
+<!-- पेज का मुख्य कंटेंट -->
 {% block content %}
-<main>
-    <!-- We will use the 'form-box' class which is already in style.css -->
-    <div class="form-box animate-on-load">
+<div class="register-container">
+    <div class="register-box">
+        <h2>नया किसान अकाउंट बनाएँ</h2>
+        <p>कृषि मित्र पोर्टल से जुड़ने के लिए अपनी जानकारी भरें।</p>
         
-        <h2>Create a New Account</h2>
-        <p style="margin-bottom: 25px; color: #555;">Choose a username and password to join the portal.</p>
-
-        <!-- Flash messages (Errors) will be shown here (they are inside the <main> block in layout.html) -->
-
-        <!-- The registration form -->
-        <form method="POST" action="/register">
+        <!-- रजिस्ट्रेशन फॉर्म -->
+        <form class="register-form" action="{{ url_for('register') }}" method="POST">
+            
             <div class="form-group">
-                <label for="username">Choose a Username:</label>
-                <input type="text" id="username" name="username" required>
+                <label for="fullname">पूरा नाम (Full Name)</label>
+                <input type="text" id="fullname" name="fullname" required>
             </div>
+
+            <!-- (नया) पता -->
             <div class="form-group">
-                <label for="password">Choose a Password:</label>
+                <label for="address">गाँव / शहर का नाम (Address)</label>
+                <input type="text" id="address" name="address" placeholder="जैसे: जबलपुर" required>
+            </div>
+
+            <!-- (नया) मोबाइल नंबर -->
+            <div class="form-group">
+                <label for="phone">मोबाइल नंबर (Phone Number)</label>
+                <input type="tel" id="phone" name="phone" placeholder="अपना 10 अंकों का नंबर लिखें" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">ईमेल (Email)</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">पासवर्ड (Password)</label>
                 <input type="password" id="password" name="password" required>
             </div>
-            <button type="submit" class="btn">Create Account</button>
+
+            <div class="form-group">
+                <label for="confirm_password">पासवर्ड की पुष्टि करें (Confirm Password)</label>
+                <input type="password" id="confirm_password" name="confirm_password" required>
+            </div>
+            
+            <button type="submit" class="btn-submit">रजिस्टर करें</button>
         </form>
-        <p style="text-align: center; margin-top: 20px;">
-            Already have an account? <a href="/login">Login here</a>
-        </p>
+        
+        <div class="register-footer">
+            <p>क्या आपका पहले से अकाउंट है? <a href="{{ url_for('login') }}">यहाँ लॉगिन करें</a></p>
+            <!-- शॉप लिंक -->
+            <p>क्या आप एक दुकान के मालिक हैं? <a href="{{ url_for('register_shop') }}">शॉप रजिस्टर करें</a></p>
+        </div>
     </div>
-</main>
+</div>
 {% endblock %}

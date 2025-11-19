@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>फसल ग्रेडिंग - कृषि मित्र</title>
+    <style>
+        /* पेज स्टाइल */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0fdf4; /* हल्का हरा बैकग्राउंड */
+            margin: 0;
+            padding: 0;
+            color: #2d3748;
+        }
+
+        /* नेविगेशन बार (छोटा सा) */
+        .navbar {
+            background-color: #2F855A;
+            padding: 15px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+        }
+        .navbar a { color: white; text-decoration: none; margin: 0 15px; }
+
+        /* कंटेनर */
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        h1 { color: #276749; margin-bottom: 10px; font-size: 2.2rem; }
+        p.desc { color: #718096; margin-bottom: 30px; font-size: 1.1rem; }
+        
+        /* अपलोड बॉक्स */
+        .upload-box {
+            border: 3px dashed #48BB78;
+            background-color: #F0FFF4;
+            padding: 40px;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-bottom: 25px;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .upload-box:hover { background-color: #C6F6D5; border-color: #2F855A; }
+        
+        input[type="file"] { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            top: 0; 
+            left: 0; 
+            opacity: 0; 
+            cursor: pointer; 
+        }
+        
+        .upload-label { 
+            font-size: 1.3rem; 
+            color: #2F855A; 
+            font-weight: bold;
+            display: block;
+        }
+        
+        /* बटन */
+        .btn-submit {
+            background-color: #38A169;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s, background 0.3s;
+        }
+        .btn-submit:hover { background-color: #276749; transform: translateY(-2px); }
+
+        /* रिजल्ट बॉक्स */
+        .result-box {
+            margin-top: 40px;
+            text-align: left;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-top: 6px solid #38A169;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .loading { 
+            display: none; 
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #D69E2E; 
+            font-weight: bold; 
+        }
+
+        /* रिजल्ट के अंदर की स्टाइलिंग (AI generated HTML के लिए) */
+        .result-box h3 { color: #2c5282; margin-top: 20px; }
+        .result-box p { line-height: 1.6; font-size: 1.05rem; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <a href="/">🏠 होम</a>
+        <a href="/krishi-yantra">🚜 यंत्र</a>
+        <a href="/crop-grading">✅ फसल ग्रेडिंग</a>
+    </div>
+
+    <div class="container">
+        <h1>AI फसल ग्रेडिंग (Quality Check)</h1>
+        <p class="desc">अपनी फसल की फोटो अपलोड करें। हमारा AI बताएगा कि वह 'ए-ग्रेड' है या नहीं और आपको सही दाम कैसे मिलेगा।</p>
+
+        <form action="/crop-grading" method="post" enctype="multipart/form-data" onsubmit="showLoading()">
+            <div class="upload-box">
+                <input id="file-upload" type="file" name="file" accept="image/*" required onchange="updateFileName(this)">
+                <span class="upload-label" id="upload-text">📸 यहाँ क्लिक करके फोटो चुनें</span>
+            </div>
+            <button type="submit" class="btn-submit">ग्रेड चेक करें</button>
+        </form>
+
+        <div id="loading" class="loading">
+            ⏳ AI विश्लेषण कर रहा है... कृपया 5-10 सेकंड प्रतीक्षा करें...
+        </div>
+
+        {% if result %}
+        <div class="result-box">
+            <h2 style="color: #2F855A; border-bottom: 2px solid #eee; padding-bottom: 10px;">🔍 जांच रिपोर्ट:</h2>
+            <div>{{ result | safe }}</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function updateFileName(input) {
+            if (input.files && input.files[0]) {
+                document.getElementById('upload-text').innerText = '✅ फोटो चुनी गई: ' + input.files[0].name;
+                document.getElementById('upload-text').style.color = '#38A169';
+            }
+        }
+
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+        }
+    </script>
+
+</body>
+</html>

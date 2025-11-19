@@ -1,39 +1,59 @@
-{% extends "layout.html" %} <!-- Step 1: Extend the layout -->
+{% extends 'layout.html' %}
 
-<!-- Step 2: Change title -->
-{% block title %}
-    Government Schemes
-{% endblock %}
+{% block title %}सरकारी योजनाएँ - कृषि मित्र{% endblock %}
 
-<!-- Step 3: Put all content inside this block -->
 {% block content %}
-<main>
-    <h2 style="text-align: left;" class="animate-on-load">Key Government Schemes for Farmers</h2>
+<div class="page-container">
     
-    <!-- The .info-card class is already defined in style.css -->
-    <section class="info-card animate-on-load">
-        <h3>1. Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)</h3>
-        <p>Under this scheme, all small and marginal farmers receive up to ₹6,000 per year as minimum income support. This amount is deposited directly into their bank accounts in three installments of ₹2,000 each.</p>
-        <a href="https://pmkisan.gov.in/" class="btn-secondary" target="_blank" rel="noopener noreferrer">Learn More (Official Link)</a>
-    </section>
+    <div class="page-header">
+        <h1>किसान सरकारी योजनाएँ</h1>
+        <p>भारत सरकार और राज्य सरकार द्वारा किसानों के लाभ के लिए चलाई जा रही प्रमुख योजनाएँ।</p>
+    </div>
 
-    <section class="info-card animate-on-load">
-        <h3>2. Pradhan Mantri Fasal Bima Yojana (PMFBY)</h3>
-        <p>This scheme provides insurance coverage and financial support to farmers in the event of crop failure due to natural calamities, pests, or diseases.</p>
-        <a href="https://pmfby.gov.in/" class="btn-secondary" target="_blank" rel="noopener noreferrer">Learn More (Official Link)</a>
-    </section>
+    <div class="schemes-list">
+        
+        <div class="scheme-card">
+            <div class="scheme-icon">
+                <i class="fa-solid fa-seedling"></i>
+            </div>
+            <div class="scheme-content">
+                <h2>प्रधानमंत्री किसान सम्मान निधि (PM-KISAN)</h2>
+                <p>इस योजना के तहत, पात्र किसान परिवारों को प्रति वर्ष ₹6,000 की वित्तीय सहायता तीन समान किश्तों में दी जाती है।</p>
+                <a href="https://pmkisan.gov.in/" target="_blank" class="btn-learn-more">अधिक जानें</a>
+            </div>
+        </div>
 
-    <section class="info-card animate-on-load">
-        <h3>3. Kisan Credit Card (KCC) Scheme</h3>
-        <p>This scheme aims to provide farmers with timely and easy access to credit (loans) for their farming and other needs.</p>
-        <a href="https://www.sbi.co.in/web/agri-rural/agriculture-banking/crop-loan/kisan-credit-card-kcc" class="btn-secondary" target="_blank" rel="noopener noreferrer">Learn More (Example Link)</a>
-    </section>
+        <div class="scheme-card">
+            <div class="scheme-icon">
+                <i class="fa-solid fa-cloud-sun-rain"></i>
+            </div>
+            <div class="scheme-content">
+                <h2>प्रधानमंत्री फसल बीमा योजना (PMFBY)</h2>
+                <p>प्राकृतिक आपदाओं, कीटों या बीमारियों के कारण फसल खराब होने की स्थिति में किसानों को बीमा कवर और वित्तीय सहायता प्रदान करती है।</p>
+                <a href="https://pmfby.gov.in/" target="_blank" class="btn-learn-more">अधिक जानें</a>
+            </div>
+        </div>
 
-    <section class="info-card animate-on-load">
-        <h3>4. Soil Health Card Scheme</h3>
-        <p>Under this scheme, the government provides farmers with information about the nutrient status of their soil and recommends the correct dosage of fertilizers to improve crop yield.</p>
-        <a href="https://soilhealth.dac.gov.in/" class="btn-secondary" target="_blank" rel="noopener noreferrer">Learn More (Official Link)</a>
-    </section>
+        <div class="scheme-card">
+            <div class="scheme-icon">
+                <i class="fa-solid fa-credit-card"></i>
+            </div>
+            <div class="scheme-content">
+                <h2>किसान क्रेडिट कार्ड (KCC) योजना</h2>
+                <p>किसानों को कम ब्याज दर पर बीज, उर्वरक, कीटनाशक आदि खरीदने के लिए समय पर ऋण (loan) उपलब्ध कराती है।</p>
+                <a href="#" target="_blank" class="btn-learn-more">अधिक जानें</a>
+            </div>
+        </div>
 
-</main>
-{% endblock %}
+        <div class="scheme-card">
+            <div class="scheme-icon">
+                <i class="fa-solid fa-flask-vial"></i>
+            </div>
+            <div class="scheme-content">
+                <h2>मृदा स्वास्थ्य कार्ड (Soil Health Card)</h2>
+                <p>किसानों को उनकी मिट्टी के पोषक तत्वों की स्थिति के बारे में जानकारी देता है और उर्वरकों के सही उपयोग की सिफारिश करता है।</p>
+                <a href="https://soilhealth.dac.gov.in/" target="_blank" class="btn-learn-more">अधिक जानें</a>
+            </div>
+        </div>
+        
+    </div> </div> {% endblock %}

@@ -1,0 +1,162 @@
+<!-- layout.html से सब कुछ इनहेरिट करें -->
+{% extends 'layout.html' %}
+
+<!-- पेज का टाइटल सेट करें -->
+{% block title %}मौसम की जानकारी - कृषि मित्र{% endblock %}
+
+<!-- पेज का मुख्य कंटेंट -->
+{% block content %}
+<div class="page-container weather-container">
+    
+    <!-- पेज हेडर -->
+    <div class="page-header">
+        <h1>मौसम की जानकारी</h1>
+        <p>अपने शहर का ताज़ा मौसम और अगले 5 दिनों का पूर्वानुमान देखें।</p>
+    </div>
+
+    <!-- (नया) शहर खोजने का बार (Search Bar) - (ID के साथ) -->
+    <div class="weather-search">
+        <input type="text" id="city-search-input" placeholder="अपना शहर खोजें (जैसे: Jabalpur)">
+        <button class="btn-submit" id="city-search-button">खोजें</button>
+    </div>
+
+    <!-- (नया) लोडिंग (Loading) इंडिकेटर (शुरू में छिपा हुआ) -->
+    <div id="loading-indicator-weather" style="display: none; text-align: center; margin: 2rem;">
+        <p>मौसम की जानकारी लोड हो रही है...</p>
+    </div>
+
+    <!-- (नया) मुख्य वेदर कार्ड (शुरू में छिपा हुआ) -->
+    <div class="weather-card-main" id="weather-card" style="display: none;">
+        <div class="weather-main-info">
+            <!-- (ID बदला गया) -->
+            <h2 id="weather-city-name">...</h2>
+            <!-- (ID बदला गया) -->
+            <p class="current-datetime" id="weather-datetime">...</p>
+            <div class="current-temp">
+                <!-- (ID बदला गया) -->
+                <img id="weather-icon" src="" alt="weather icon" style="width: 80px; height: 80px;">
+                <!-- (ID बदला गया) -->
+                <span id="weather-temp">...</span>
+            </div>
+            <!-- (ID बदला गया) -->
+            <p class="weather-description" id="weather-description">...</p>
+        </div>
+        <div class="weather-extra-info">
+            <h3>मौसम विवरण</h3>
+            <div class="info-grid">
+                <div>
+                    <i class="fa-solid fa-temperature-high"></i>
+                    <!-- (ID बदला गया) -->
+                    <p id="weather-temp-max"><strong>अधिकतम:</strong> ...</p>
+                </div>
+                <div>
+                    <i class="fa-solid fa-temperature-low"></i>
+                    <!-- (ID बदला गया) -->
+                    <p id="weather-temp-min"><strong>न्यूनतम:</strong> ...</p>
+                </div>
+                <div>
+                    <i class="fa-solid fa-wind"></i>
+                    <!-- (ID बदला गया) -->
+                    <p id="weather-wind"><strong>हवा:</strong> ...</p>
+                </div>
+                <div>
+                    <i class="fa-solid fa-droplet"></i>
+                    <!-- (ID बदला गया) -->
+                    <p id="weather-humidity"><strong>आर्द्रता:</strong> ...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div> <!-- .page-container -->
+
+
+<!-- (नया) इस पेज के लिए विशेष JavaScript (सही ID के साथ) -->
+<script>
+    // यह पक्का करें कि DOM लोड हो गया है
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        // --- 1. सभी HTML हिस्सों को चुनें (सही ID के साथ) ---
+        const searchInput = document.getElementById('city-search-input');
+        const searchButton = document.getElementById('city-search-button');
+        const loadingIndicator = document.getElementById('loading-indicator-weather');
+        const weatherCard = document.getElementById('weather-card');
+        
+        // कार्ड के अंदर के हिस्से
+        const cityNameEl = document.getElementById('weather-city-name');
+        const datetimeEl = document.getElementById('weather-datetime');
+        const iconEl = document.getElementById('weather-icon');
+        const tempEl = document.getElementById('weather-temp');
+        const descriptionEl = document.getElementById('weather-description');
+        const tempMaxEl = document.getElementById('weather-temp-max');
+        const tempMinEl = document.getElementById('weather-temp-min');
+        const windEl = document.getElementById('weather-wind');
+        const humidityEl = document.getElementById('weather-humidity');
+
+        // --- 2. "खोजें" बटन पर क्लिक लिस्नर जोड़ें ---
+        searchButton.addEventListener('click', fetchWeather);
+        
+        // "Enter" दबाने पर भी सर्च करें
+        searchInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                fetchWeather();
+            }
+        });
+
+        // --- 3. मुख्य मौसम फ़ंक्शन ---
+        async function fetchWeather() {
+            const city = searchInput.value.trim();
+            if (city === "") {
+                alert("कृपया एक शहर का नाम डालें।");
+                return;
+            }
+
+            // पुराने रिजल्ट्स को छिपाएँ और लोडिंग दिखाएँ
+            weatherCard.style.display = 'none';
+            loadingIndicator.style.display = 'block';
+
+            try {
+                // 1. अपने सर्वर (app.py) को कॉल करें
+                const response = await fetch('/get-weather', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ city: city })
+                });
+
+                loadingIndicator.style.display = 'none';
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    // (नया) app.py से मिला असली एरर मैसेज दिखाएँ
+                    alert(`क्षमा करें, यह शहर नहीं मिला। (एरर: ${errorData.error})`);
+                    return;
+                }
+
+                // 2. app.py से मिला JSON डेटा
+                const data = await response.json();
+
+                // 3. HTML को डेटा से भरें
+                cityNameEl.textContent = data.city_name;
+                datetimeEl.textContent = new Date().toLocaleDateString('hi-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                iconEl.src = `http://openweathermap.org/img/wn/${data.icon}@2x.png`;
+                tempEl.textContent = `${Math.round(data.temp)}°C`;
+                descriptionEl.textContent = data.description;
+                tempMaxEl.innerHTML = `<strong>अधिकतम:</strong> ${Math.round(data.temp_max)}°C`;
+                tempMinEl.innerHTML = `<strong>न्यूनतम:</strong> ${Math.round(data.temp_min)}°C`;
+                windEl.innerHTML = `<strong>हवा:</strong> ${data.wind_speed} m/s`;
+                humidityEl.innerHTML = `<strong>आर्द्रता:</strong> ${data.humidity}%`;
+                
+                // 4. भरा हुआ कार्ड दिखाएँ
+                weatherCard.style.display = 'flex';
+
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                loadingIndicator.style.display = 'none';
+                alert("मौसम लाने में कोई अज्ञात एरर हुई। (script)");
+            }
+        }
+    });
+</script>
+{% endblock %}

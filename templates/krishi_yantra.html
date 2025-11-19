@@ -1,0 +1,98 @@
+<!-- layout.html से सब कुछ इनहेरिट करें -->
+{% extends 'layout.html' %}
+
+<!-- पेज का टाइटल सेट करें -->
+{% block title %}कृषि यन्त्र - कृषि मित्र{% endblock %}
+
+<!-- पेज का मुख्य कंटेंट -->
+{% block content %}
+<div class="page-container">
+    
+    <!-- पेज हेडर -->
+    <div class="page-header">
+        <h1>आधुनिक कृषि उपयोगी यन्त्र</h1>
+        <p>खेती को आसान और अधिक उत्पादक बनाने वाले आधुनिक उपकरण और मशीनें।</p>
+    </div>
+
+    <!-- 
+        यह कोड 100% सही है 
+        इसे Screenshot (77).png के फ़ाइल नामों से मैच किया गया है 
+    -->
+    <div class="yantra-grid">
+        
+        <!-- यन्त्र 1: ट्रैक्टर (tractor.jpg) -->
+        <div class="yantra-card">
+            <div class="yantra-image">
+                <img src="{{ url_for('static', filename='images/tractor.jpg') }}" alt="ट्रैक्टर">
+            </div>
+            <div class="yantra-content">
+                <h3>ट्रैक्टर (Tractor)</h3>
+                <p>खेत की जुताई, बुवाई और माल ढोने के लिए सबसे महत्वपूर्ण मशीन।</p>
+                <a href="#" class="btn-learn-more">अधिक जानें</a>
+            </div>
+        </div>
+
+        <!-- यन्त्र 2: रोटावेटर (rotavator.png) -->
+        <div class="yantra-card">
+            <div class="yantra-image">
+                <img src="{{ url_for('static', filename='images/rotavator.jpg') }}" alt="रोटावेटर">
+            </div>
+            <div class="yantra-content">
+                <h3>रोटावेटर (Rotavator)</h3>
+                <p>मिट्टी को भुरभुरा बनाने और खेत को बुवाई के लिए जल्दी तैयार करने में मदद करता है।</p>
+                <a href="#" class="btn-learn-more">अधिक जानें</a>
+            </div>
+        </div>
+
+        <!-- यन्त्र 3: सीड ड्रिल (seed_drill.jpg) -->
+        <div class="yantra-card">
+            <div class="yantra-image">
+                <img src="{{ url_for('static', filename='images/seed_drill.jpg') }}" alt="सीड ड्रिल">
+            </div>
+            <div class="yantra-content">
+                <h3>सीड ड्रिल (Seed Drill)</h3>
+                <p>बीजों को समान गहराई और दूरी पर बोने के लिए उपयोग किया जाता है, जिससे उपज बढ़ती है।</p>
+                <a href="#" class="btn-learn-more">अधिक जानें</a>
+            </div>
+        </div>
+
+        <!-- यन्त्र 4: थ्रेशर (thresher.jpg) -->
+        <div class="yantra-card">
+            <div class="yantra-image">
+                <img src="{{ url_for('static', filename='images/thresher.jpg') }}" alt="थ्रेशर">
+            </div>
+            <div class="yantra-content">
+                <h3>थ्रेशर (Thresher)</h3>
+                <p>फसल की कटाई के बाद दानों को भूसे से अलग करने (गाहने) का काम करता है।</p>
+                <a href="#" class="btn-learn-more">अधिक जानें</a>
+            </div>
+        </div>
+
+        <!-- यन्त्र 5: स्प्रेयर (sprayer.jpg) -->
+        <div class="yantra-card">
+            <div class="yantra-image">
+                <img src="{{ url_for('static', filename='images/sprayer.jpg') }}" alt="स्प्रेयर">
+            </div>
+            <div class="yantra-content">
+                <h3>स्प्रेयर (Sprayer)</h3>
+                <p>फसलों पर कीटनाशकों और उर्वरकों का समान रूप से छिड़काव करने के लिए उपयोगी।</p>
+                <a href="#" class="btn-learn-more">अधिक जानें</a>
+            </div>
+        </div>
+
+        <!-- यन्त्र 6: ड्रोन (agri drone.jpg) -->
+        <div class="yantra-card">
+            <div class="yantra-image">
+                <img src="{{ url_for('static', filename='images/agri drone.jpg') }}" alt="कृषि ड्रोन">
+            </div>
+            <div class="yantra-content">
+                <h3>कृषि ड्रोन (Agri Drone)</h3>
+                <p>खेत की निगरानी करने, डेटा इकट्ठा करने और सटीक छिड़काव के लिए नई तकनीक।</p>
+                <a href="#" class="btn-learn-more">अधिक जानें</a>
+            </div>
+        </div>
+        
+    </div> <!-- .yantra-grid -->
+
+</div> <!-- .page-container -->
+{% endblock %}

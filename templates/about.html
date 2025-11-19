@@ -1,37 +1,45 @@
-{% extends "layout.html" %} <!-- Step 1: Extend the layout -->
+<!-- layout.html से सब कुछ इनहेरिट करें -->
+{% extends 'layout.html' %}
 
-<!-- Step 2: Change title -->
-{% block title %}
-    About Us
-{% endblock %}
+<!-- पेज का टाइटल सेट करें -->
+{% block title %}हमारे बारे में - कृषि मित्र{% endblock %}
 
-<!-- Step 3: Put all content inside this block -->
+<!-- पेज का मुख्य कंटेंट -->
 {% block content %}
-<main style="max-width: 900px;"> <!-- Set width for this page -->
+<div class="page-container about-container">
     
-    <section class="info-card animate-on-load">
-        <h2>About Krishi Mitra Portal</h2>
-        <p>
-            Welcome to Krishi Mitra, your "Smart Awareness Portal" dedicated to empowering farmers with technology and real-time information.
-        </p>
-        <p>
-            This project was developed as a solution to bridge the information gap for farmers, providing them with the tools they need to succeed in a modern agricultural landscape.
-        </p>
-    </section>
+    <!-- सेक्शन 1: हमारा मिशन -->
+    <div class="about-section text-center">
+        <h1>हमारे बारे में (About Us)</h1>
+        <p class="lead">"कृषि मित्र - स्मार्ट अवेयरनेस पोर्टल" में आपका स्वागत है।</p>
+        <p>हमारा मिशन भारतीय किसानों को आधुनिक तकनीक, सही जानकारी और डिजिटल उपकरणों से जोड़कर उन्हें सशक्त बनाना है। हम मानते हैं कि सही समय पर सही जानकारी से किसान अपनी उपज बढ़ा सकते हैं और समृद्धि की ओर बढ़ सकते हैं।</p>
+    </div>
 
-    <section class="info-card animate-on-load">
-        <h3>Our Mission & Features</h3>
-        <p>
-            Our mission is to combine the power of Python (Flask), live data from external APIs, and Artificial Intelligence (Google Gemini) to create a single, reliable platform. We provide:
-        </p>
-        <ul>
-            <li><strong>Live Weather Data:</strong> Personalized forecasts from OpenWeatherMap.</li>
-            <li><strong>Smart AI Assistant:</strong> Instant answers to complex farming questions (powered by Gemini).</li>
-            <li><strong>Community Support:</strong> A Q&A forum for farmers to help each other.</li>
-            <li><strong>Market Awareness:</strong> Up-to-date information on crop prices.</li>
-            <li><strong>Knowledge Base:</strong> Curated information on Government Schemes.</li>
-        </ul>
-    </section>
+    <!-- सेक्शन 2: हमारी दृष्टि (Our Vision) -->
+    <div class="about-section vision-section">
+        <div class="vision-text">
+            <h2>हमारी दृष्टि (Our Vision)</h2>
+            <p>हम एक ऐसे भविष्य की कल्पना करते हैं जहाँ भारत का हर किसान डिजिटल रूप से साक्षर हो। हमारा यह पोर्टल किसानों को मौसम की जानकारी, मिट्टी की जाँच, लाइव बाजार भाव, और सरकारी योजनाओं से सीधे जोड़ने का एक प्रयास है।</p>
+            <ul>
+                <li><i class="fa-solid fa-check-circle"></i> किसानों को विश्वसनीय जानकारी प्रदान करना।</li>
+                <li><i class="fa-solid fa-check-circle"></i> तकनीक के माध्यम से खेती की लागत कम करना।</li>
+                <li><i class="fa-solid fa-check-circle"></i> स्थानीय बाजारों और दुकानों को एक मंच पर लाना।</li>
+            </ul>
+        </div>
+        <div class="vision-image">
+            <!-- === (यह हिस्सा फिक्स किया गया है) === -->
+            <!-- ('about_image.jpg' की जगह 'meeting.jpg' का उपयोग किया गया) -->
+            <img src="{{ url_for('static', filename='images/meeting.jpg') }}" alt="हमारी टीम">
+            <!-- === यहाँ तक === -->
+        </div>
+    </div>
 
-</main>
+    <!-- सेक्शन 3: टीम (वैकल्पिक) -->
+    <div class="about-section text-center">
+        <h2>हमारी टीम से मिलें</h2>
+        <p>हम कंप्यूटर साइंस के छात्र हैं जो तकनीक के माध्यम से कृषि क्षेत्र में बदलाव लाने के लिए भावुक हैं।</p>
+        <!-- आप यहाँ टीम के सदस्यों को जोड़ सकते हैं -->
+    </div>
+
+</div>
 {% endblock %}

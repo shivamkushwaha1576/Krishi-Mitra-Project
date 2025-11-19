@@ -1,0 +1,14 @@
+--- Database Files ---
+
+*.db
+instance/
+
+--- Python Files ---
+
+pycache/
+.venv/
+venv/
+
+--- Credentials ---
+
+.env
