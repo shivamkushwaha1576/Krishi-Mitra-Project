@@ -9,6 +9,8 @@ from flask_login import LoginManager, UserMixin, login_user, logout_user, login_
 from dotenv import load_dotenv
 import google.generativeai as genai
 from PIL import Image
+import re
+
 
 # --- 1. कॉन्फ़िगरेशन और सेटअप ---
 
@@ -66,6 +68,28 @@ class SoilSample(db.Model):
     sample_id = db.Column(db.String(100), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     status = db.Column(db.String(50), nullable=False, default='Pending')
+
+def clean_text(text: str) -> str:
+    """
+    सरल sanitizer:
+    - markdown emphasis (*, **, _, `, ~) हटाता है
+    - markdown links [text](url) -> text में बदलता है
+    - code blocks ```...``` निकाल देता है
+    - HTML tags हटाकर whitespace normalize करता है
+    """
+    if not text:
+        return ""
+    # 1) [label](url) -> label
+    text = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', text)
+    # 2) remove emphasis markers *, **, ***, _, __, `, ~
+    text = re.sub(r'(\*{1,3}|_{1,3}|`|~)', '', text)
+    # 3) remove fenced code blocks
+    text = re.sub(r'```[\s\S]*?```', '', text)
+    # 4) strip HTML tags if any
+    text = re.sub(r'<[^>]+>', '', text)
+    # 5) normalize whitespace
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
 
 
 # --- 3. यूज़र ऑथेंटिकेशन ---
@@ -292,20 +316,29 @@ def plant_disease():
 def ask_ai():
     try:
         user_message = request.json.get('message')
-        if not user_message: return jsonify({'error': 'Empty'})
-        
+        if not user_message:
+            return jsonify({'error': 'Empty'})
+
         # स्मार्ट मॉडल सेलेक्शन
         selected_model = get_best_model()
         model = genai.GenerativeModel(selected_model)
-        
-        response = model.generate_content(f"किसान सहायक के रूप में हिंदी में जवाब दें: {user_message}")
-        return jsonify({'answer': response.text})
+
+        response = model.generate_content(
+            f"किसान सहायक के रूप में हिंदी में जवाब दें: {user_message}"
+        )
+
+        # ⭐ यहाँ sanitizer सही जगह पर
+        answer = clean_text(response.text)
+
+        return jsonify({'answer': answer})
+
     except Exception as e:
         print(f"Chatbot Error: {e}")
         if "429" in str(e):
-             return jsonify({'answer': 'AI सेवा अभी व्यस्त है (कोटा फुल)। कृपया 1 मिनट बाद पूछें।'})
+            return jsonify({'answer': 'AI सेवा अभी व्यस्त है (कोटा फुल)। कृपया 1 मिनट बाद पूछें।'})
         return jsonify({'answer': f'AI एरर: {str(e)}'})
 
+        
 
 # --- 6. अन्य टूल्स ---
 
