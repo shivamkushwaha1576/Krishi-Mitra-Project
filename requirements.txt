@@ -1,4 +1,8 @@
-flask
-gunicorn
-requests
+Flask
 Flask-SQLAlchemy
+Flask-Bcrypt
+Flask-Login
+requests
+python-dotenv
+gunicorn
+email_validator
