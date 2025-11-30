@@ -9,3 +9,4 @@ email_validator
 google-generativeai
 Pillow>=9.5.0
 
+Pillow>=9.5.0
