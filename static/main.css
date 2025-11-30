@@ -15,6 +15,9 @@
     --shadow-sm: 0 4px 6px rgba(0,0,0,0.05);
     --shadow-md: 0 10px 20px rgba(46, 125, 50, 0.15); /* हरे रंग की हल्की परछाई */
     --radius: 16px;           /* गोल कोने */
+     --primary-color: var(--primary);        /* backward compatibility */
+    --secondary-color: var(--primary-light);/* use where secondary is referenced */
+    --shadow: var(--shadow-md);     
 }
 
 /* 3. ग्लोबल स्टाइल्स */
@@ -119,7 +122,7 @@ a { text-decoration: none; transition: 0.3s; }
 .hero {
     text-align: center;
     padding: 5rem 1rem;
-    background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
     color: white;
     border-radius: 0 0 50px 50px; /* नीचे से गोल */
     margin-bottom: 3rem;

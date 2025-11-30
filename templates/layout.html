@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}कृषि मित्र{% endblock %}</title>
     
-    <!-- (!!! जादुई फिक्स !!!) ?v=2 जोड़ने से ब्राउज़र नई फाइल लोड करेगा -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <!-- (!!! FINAL FIX: CSS/JS को हर बार नया Verson (वर्जन) दें !!!) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}?v={{ range(1, 999) | random }}">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -54,7 +54,7 @@
         {% endblock %}
     </main>
     
-    <!-- === AI चैटबॉट (100% Fixed) === -->
+    <!-- === AI चैटबॉट (Final HTML Structure) === -->
     <div id="chatbot-container">
         <div id="chatbot-window">
             <div class="chat-header">
@@ -98,9 +98,10 @@
         <p>&copy; 2025 कृषि मित्र - स्मार्ट अवेयरनेस पोर्टल. सभी अधिकार सुरक्षित।</p>
     </footer>
 
-    <!-- (!!! जादुई फिक्स !!!) ?v=2 यहाँ भी जोड़ा गया है -->
-    <script src="{{ url_for('static', filename='script.js') }}?v=2"></script>
+    <!-- Script link (Final) -->
+    <script src="{{ url_for('static', filename='script.js') }}?v={{ range(1, 999) | random }}"></script>
     
     {% block scripts %}{% endblock %}
 </body>
 </html>
+
