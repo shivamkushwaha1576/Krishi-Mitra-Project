@@ -4,8 +4,6 @@ Krishi Mitra (कृषि मित्र) - A Smart Awareness Portal for Farme
 
 This project was created as a B.Tech (Computer Science) project.
 
-Team: Shivam Kushwaha, Satyam Patel, Sagar Kushwaha
-
 Institute: Shri Ram Institute of Science & Technology, Jabalpur
 
 🚀 Core Features (प्रोजेक्ट के मुख्य फ़ीचर्स)
